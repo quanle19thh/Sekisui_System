@@ -1,10 +1,12 @@
 import { ODIS0020OrderDetailList } from './../../entities/odis0020-OrderDetailList.entity';
+import { SplitOrderDetailShiwake, SplitOrderDetailSplit } from '../../../ODIS0060/entities/odis0060.entity';
 import { DataEmitter } from './../order-detail-input.component';
 import { Component, ViewChild, Input, ViewEncapsulation, Output, EventEmitter, OnInit, ViewContainerRef } from '@angular/core';
 import { MatTable } from '@angular/material';
 import { Router } from '@angular/router';
 import { CommonComponent } from 'app/common/common.component';
 import { Const } from 'app/common/const';
+import { SplitOrderDetailService } from '../../../ODIS0060/services/split-detail-input-service';
 
 @Component({
   selector: 'shiwake-table',
@@ -77,6 +79,7 @@ export class OrderDetailShiwakeTable implements OnInit{
     private router: Router,
     private comCompnt: CommonComponent,
     private viewRef: ViewContainerRef,
+    private service: SplitOrderDetailService,
   ){  }
 
   ngOnInit(){
@@ -206,6 +209,40 @@ export class OrderDetailShiwakeTable implements OnInit{
     this.dataEmitter.selected = true;
     this.dataEmitter.data = data;
     this.sendOrderData.emit(this.dataEmitter);
+  }
+
+  addSplitDetail($event, selectedItem: ODIS0020OrderDetailList[]) {
+    var temp1: SplitOrderDetailShiwake[] = [
+      {
+        journalCode: selectedItem['journalCode'],
+        accountCode: selectedItem['accountCode'],
+        journalName: selectedItem['journalName'],
+        orderSuplierCode: selectedItem['orderSuplierCode'],
+        orderSuplierName: selectedItem['orderSuplierName'],
+        orderPlanAmount: selectedItem['orderPlanAmount'],
+      }
+    ]
+    this.service.setSplitTable(temp1);
+
+    var temp2: SplitOrderDetailSplit[] = [
+      {
+        orderPlanAmount: selectedItem['orderSplitAmount'],
+        comment: selectedItem['comment'],
+        requestDate: selectedItem['requestDate'],
+        requester: selectedItem['requester'],
+        approvalDate_lv1: selectedItem['approvalDate_lv1'],
+        approvalPerson_lv1: selectedItem['approvalPerson_lv1'],
+        approvalDate_lv2: selectedItem['approvalDate_lv2'],
+        approvalPerson_lv2: selectedItem['approvalPerson_lv2'],
+        orderDate: selectedItem['orderDate'],
+        orderAmount: selectedItem['orderAmount'],
+        recievedDate: selectedItem['recievedDate'],
+        recievedAmount: selectedItem['recievedAmount'],
+        paymentDate: selectedItem['paymentDate'],
+        paymentAmount: selectedItem['paymentAmount'],
+      }
+    ]
+    this.service.setDetailTable(temp2);
   }
 
 }

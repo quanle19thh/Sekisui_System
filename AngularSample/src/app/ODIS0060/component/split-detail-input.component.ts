@@ -1,4 +1,5 @@
 import { SplitOrderDetailShiwake, SplitOrderDetailSplit } from '../entities/odis0060.entity';
+import { ODIS0020OrderDetailList } from '../../ODIS0020/entities/odis0020-OrderDetailList.entity';
 import { SplitOrderDetailService } from '../services/split-detail-input-service';
 import { Component, OnInit, OnDestroy, Output, EventEmitter, ChangeDetectorRef, ElementRef, ɵɵresolveBody, ViewEncapsulation, Input, ViewChild, assertPlatform } from '@angular/core';
 import { MatTable } from '@angular/material';
@@ -24,8 +25,8 @@ export class SplitOrderDetailInputComponent implements OnInit {
     'journalCode',
     'accountCode',
     'journalName',
-    'orderSupplierCode',
-    'orderSupplierName',
+    'orderSuplierCode',
+    'orderSuplierName',
     'orderPlanAmount',
   ];
 
@@ -75,7 +76,8 @@ export class SplitOrderDetailInputComponent implements OnInit {
 
   @ViewChild(MatTable, { static: false }) table: MatTable<any>;
 
-  sum: number = 93555;
+  //合計金額
+  sum: number = 0;
 
   title = '発注明細入力＿分割明細入力';
 
@@ -88,11 +90,16 @@ export class SplitOrderDetailInputComponent implements OnInit {
   requestDate: string;
   requester: string;
 
+  //テーブルの行が選択されているかどうか
   selected: boolean;
 
+  //行のインデックス
   index: number;
 
+  //現在の日付
   currentDate = Date.now();
+
+  test:string;
 
 
   constructor(
@@ -107,33 +114,28 @@ export class SplitOrderDetailInputComponent implements OnInit {
 
   ngOnInit() {
     this.getSplitOderDetailShiwake();
-    this.getSplitOrderDetailSplit()
+    this.getSplitOrderDetailSplit();
     this.appComponent.setHeader(Const.ScreenName.S0006, Const.LinKSetting.L0006);
   }
 
   getSplitOderDetailShiwake() {
-
-    this.service.getSplitOderDetailShiwake()
-      .subscribe(
-        data => this.shiwakeData = data
-      );
+    this.shiwakeData = this.service.getSplitTable();
   }
 
   getSplitOrderDetailSplit() {
-    this.service.getSplitOrderDetailSplit()
-      .subscribe(
-        data => this.bunkatsuData = data
-      );
+    this.bunkatsuData = this.service.getDetailTable();
   }
 
-  ngOnChanges() {
-    this.sum = this.bunkatsuData.map(data => Number(data.orderPlanAmount)).reduce((acc, value) => (acc + value));
+  sumxx(){
+    return this.bunkatsuData.map(data => Number(data.orderPlanAmount)).reduce((acc, value) => (acc + value));
   }
 
+  //「戻る」ボタンの押下
   public onBackClick($event) {
     this._location.back();
   }
 
+  //「行の選択」
   public onSelectClick($event) {
 
     if (this.orderPlanAmount || this.comment || this.requestDate || this.requester) {
@@ -172,6 +174,7 @@ export class SplitOrderDetailInputComponent implements OnInit {
     this.index = this.bunkatsuData.indexOf(selectedItem);
   }
 
+  //「明細更新」ボタンの押下
   onUpdateClick($event) {
     if (this.selected) {
       this.bunkatsuData[this.index].orderPlanAmount = this.orderPlanAmount
@@ -183,7 +186,7 @@ export class SplitOrderDetailInputComponent implements OnInit {
       alert("行を選択して下さい。");
     }
   }
-
+  //「削除」ボタンの押下
   onDeleteClick($event) {
     if (this.selected) {
       if (this.index > -1) {
@@ -195,7 +198,7 @@ export class SplitOrderDetailInputComponent implements OnInit {
       alert("行を選択して下さい。");
     }
   }
-
+  //「中止」ボタンの押下
   onClearClick($event) {
     this.selected = false;
     this.orderPlanAmount = "";
@@ -204,6 +207,7 @@ export class SplitOrderDetailInputComponent implements OnInit {
     this.requester = "";
   }
 
+  //「依頼」ボタンの押下
   onAddOrderClick($event) {
     this.requester = "test";
     this.requestDate = this.datePipe.transform(this.currentDate, "yyyy/MM/dd").toString();

@@ -1,5 +1,7 @@
 import { SplitOrderDetailShiwake } from '../../entities/odis0060.entity';
+import { ODIS0020OrderDetailList } from '../../../ODIS0020/entities/odis0020-OrderDetailList.entity';
 import { Component, Input } from '@angular/core';
+import { SplitOrderDetailService } from '../../services/split-detail-input-service';
 
 @Component({
   selector: 'split-shiwake-table',

@@ -1,4 +1,5 @@
 import { SplitOrderDetailShiwake, SplitOrderDetailSplit } from '../entities/odis0060.entity';
+import { ODIS0020OrderDetailList } from '../../ODIS0020/entities/odis0020-OrderDetailList.entity';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
@@ -6,44 +7,44 @@ import { Observable, Subject } from 'rxjs';
 @Injectable()
 export class SplitOrderDetailService {
 
-    //TODO: add URL to Server
-    // private _url: string = "/order-detail-approval/data/data.json";
+  //TODO: add URL to Server
+  // private _url: string = "/order-detail-approval/data/data.json";
 
-    // データの変更を通知するためのオブジェクト
-    private closeEventSubject = new Subject<string>();
+  // データの変更を通知するためのオブジェクト
+  private closeEventSubject = new Subject<string>();
 
-    // Subscribe するためのプロパティ( これでイベント通知をキャッチする )
-    public closeEventObservable$ = this.closeEventSubject.asObservable();
+  // Subscribe するためのプロパティ( これでイベント通知をキャッチする )
+  public closeEventObservable$ = this.closeEventSubject.asObservable();
 
-    private _urlShiwake: string = "assets/data/splitDataShiwake.json";
-    private _urlSplitOrder: string = "assets/data/dataSplitOrder.json";
-    
-    /**
-     * コンストラクタ
-     *
-     * @memberof OrderJournalSelectService
-     */
-    constructor(
-        private http: HttpClient
-    ) { }
+  private _urlShiwake: string = "assets/data/splitDataShiwake.json";
+  private _urlSplitOrder: string = "assets/data/dataSplitOrder.json";
 
-    private _val1
+  /**
+   * コンストラクタ
+   *
+   * @memberof OrderJournalSelectService
+   */
+  constructor(
+    private http: HttpClient
+  ) { }
 
-    public getVal1() {
-        return this._val1;
-    }
-    public setVal1(val1: string) {
-        this._val1 = val1;
+  private _val1
 
-    }
+  public getVal1() {
+    return this._val1;
+  }
+  public setVal1(val1: string) {
+    this._val1 = val1;
 
-    private _val2
+  }
+
+  private _val2
 
 
   public getVal2() {
     return this._val2;
   }
-  public setVal2(val2:string) {
+  public setVal2(val2: string) {
     this._val2 = val2;
   }
 
@@ -53,7 +54,7 @@ export class SplitOrderDetailService {
   public getVal3() {
     return this._val3;
   }
-  public setVal3(val3:string) {
+  public setVal3(val3: string) {
     this._val3 = val3;
   }
 
@@ -63,17 +64,27 @@ export class SplitOrderDetailService {
   public getVal4() {
     return this._val4;
   }
-  public setVal4(val4:string) {
+  public setVal4(val4: string) {
     this._val4 = val4;
   }
 
-    getSplitOderDetailShiwake(): Observable<SplitOrderDetailShiwake[]> {
+  private _splitTable;
 
-        return this.http.get<SplitOrderDetailShiwake[]>(this._urlShiwake);
-    }
+  public getSplitTable() {
+    return this._splitTable;
+  }
 
-    getSplitOrderDetailSplit(): Observable<SplitOrderDetailSplit[]> {
+  public setSplitTable(splitTable: SplitOrderDetailShiwake[]) {
+    this._splitTable = splitTable;
+  }
 
-        return this.http.get<SplitOrderDetailSplit[]>(this._urlSplitOrder);
-    }
+  private _detailTable;
+
+  public getDetailTable() {
+    return this._detailTable;
+  }
+
+  public setDetailTable(detailTable: SplitOrderDetailSplit[]) {
+    this._detailTable = detailTable;
+  }
 }

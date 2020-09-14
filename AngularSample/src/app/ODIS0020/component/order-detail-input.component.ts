@@ -279,7 +279,7 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
         this.childSekkei.orderData[i].orderPlanAmount = this.addInput.orderPlanAmount;
 
         // this.childSekkei.tableShiwake.renderRows();
-        let sekkeiBody = this.childTsuika.viewRef.element.nativeElement.querySelector('tbody')
+        let sekkeiBody = this.childSekkei.viewRef.element.nativeElement.querySelector('tbody')
         this.setNewRowHighLight(Const.Action.A0002, sekkeiBody, i);
         this.addInput.Clear();
         break;
@@ -293,7 +293,7 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
 
         // this.childHontai.tableShiwake.renderRows();
 
-        let hontaiBody = this.childTsuika.viewRef.element.nativeElement.querySelector('tbody')
+        let hontaiBody = this.childHontai.viewRef.element.nativeElement.querySelector('tbody')
         this.setNewRowHighLight(Const.Action.A0002, hontaiBody, i);
         this.addInput.Clear();
         break;
