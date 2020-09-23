@@ -66,6 +66,39 @@ export class CommonComponent{
     }
   }
 
+  clearCellBg(event: any) {
+    // テーブル 背景色 クリア
+    var wTbody = event.target.parentElement.parentElement;
+    for(var i=0; i<wTbody.rows.length; i++){
+      // 行 取得
+      var wTr = wTbody.rows[i];
+      wTr.style.backgroundColor = Const.HighLightColour.None;
+    }
+  }
+
+  public CommonOnUnSelHight(event:any){
+    // 要素取得
+    var wTr = event.target.parentElement;
+
+    if(wTr.style.backgroundColor == "rgb(204, 255, 255)") {
+      this.clearCellBg(event);
+    } else {
+      this.clearCellBg(event);
+      wTr.style.backgroundColor = Const.HighLightColour.Selected;
+    }
+
+    // 背景色 変更
+    // for(var i=0; i<wTr.cells.length; i++){
+    //   var wTd = wTr.cells[i];
+    //   if(wTd.style.backgroundColor == Const.HighLightColour.Selected) {
+    //     this.clearCellBg(event);
+    //   } else {
+    //     this.clearCellBg(event);
+    //     wTd.style.backgroundColor = Const.HighLightColour.Selected;
+    //   }
+    // }
+  }
+
   /**カンマ付与編集 */
   private withComma(tgt):any{
     var s = String(tgt).split('.');

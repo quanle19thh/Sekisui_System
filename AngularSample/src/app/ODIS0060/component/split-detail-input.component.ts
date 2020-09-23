@@ -102,7 +102,7 @@ export class SplitOrderDetailInputComponent implements OnInit {
     private router: Router,
     public datePipe: DatePipe,
     private service: SplitOrderDetailService,
-    private viewRef: ViewContainerRef,
+    private viewRef: ViewContainerRef
   ) { }
 
   /**
@@ -379,13 +379,13 @@ export class SplitOrderDetailInputComponent implements OnInit {
   /**
    * 明細テーブルに初期表の時、ボタン活動性を設定する。
    *↓↓↓　ボタン名　↓↓↓
-   * 「依頼」「承認」「承認」
+   * 「依頼」
    * 
    * @param dt 
    * 
    */
   setTableButtonDisplay(dt: SplitOrderDetailSplit[]) {
-    let skBody = this.viewRef.element.nativeElement.querySelector('tbody');
+    let skBody = this.viewRef.element.nativeElement.querySelector("tBody");
     let tr: HTMLTableRowElement;
     let btn: any;
     dt.forEach(element => {

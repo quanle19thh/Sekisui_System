@@ -10,6 +10,7 @@ import { OrderJournalSelectService } from '../../ODIS0030/services/order-journal
 import { OrderJournalSelectComponent } from '../../ODIS0030/component/order-journal-select.component';
 import { OrderSupplierSelectComponent } from '../../ODIS0040/component/order-supplier-select.component';
 import { OrderSupplierSelectService } from '../../ODIS0040/services/order-supplier-select.service';
+import { SplitOrderDetailService } from '../../ODIS0060/services/split-detail-input-service';
 import { ODIS0020OrderDetailList, ODIS0020OrderShiwake } from '../entities/odis0020-OrderDetailList.entity'
 import { ODIS0020InsertedOrderEdaBan } from '../entities/odis0020-InsertedOrderEdaBan.entity'
 import { ODIS0020MainOrderEdaBan } from '../entities/odis0020-MainOrderEdaBan.entity'
@@ -74,6 +75,7 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
     private OrderJournalSelectService: OrderJournalSelectService,
     private OrderSupplierSelectService: OrderSupplierSelectService,
     private ODIS0020Service: Odis0020Service,
+    private service: SplitOrderDetailService,
 
   ) { }
 
@@ -161,6 +163,10 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
    * データを取得
    */
   getOrderInputData() {
+    if(this.service.getDetailTable() !== undefined) {
+      
+    }
+
     this.orderService.getSingleData(this._urlOrderInput2)
       .subscribe(
         data => {
@@ -206,10 +212,10 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
           let newDt = this.setData('SetNextSplitData', tabName, element, splitDt);
           data.push(newDt);
         }
+      } else {
+        let dividedDt = this.setData('NoSplitData', tabName, element, null);
+        data.push(dividedDt);
       }
-
-      let dividedDt = this.setData('NoSplitData', tabName, element, null);
-      data.push(dividedDt);
 
     });
 
