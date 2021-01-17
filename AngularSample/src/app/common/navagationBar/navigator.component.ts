@@ -1,4 +1,4 @@
-import { Component, Input, OnInit} from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-navigator',
@@ -6,32 +6,32 @@ import { Component, Input, OnInit} from '@angular/core';
   styleUrls: ['./navigator.component.css'],
 })
 
-export class AppNavigator implements OnInit{
-    
-    branchName: string;
-    loginUser: string;
-    displayDate: any;
-    systemDate: Date = new Date();
-    day: string[] = ["日", "月", "火", "水", "木", "金", "土"];
+export class AppNavigator implements OnInit {
 
-    time = new Date();
-    
-    constructor(){
-      
-    }
-    
-    ngOnInit(): void {
-    
-        this.loginUser = '積水　次郎';
-        this.branchName = '大阪北支店';
+  branchName: string;
+  loginUser: string;
+  displayDate: any;
+  systemDate: Date = new Date();
+  day: string[] = ["日", "月", "火", "水", "木", "金", "土"];
 
-        this.displayDate = this.getSystemDate();
-    }
+  time = new Date();
 
-    /**
-    * ロカールに時刻を取得する
-    */
-   ngAfterViewInit(){
+  constructor() {
+
+  }
+
+  ngOnInit(): void {
+
+    this.loginUser = '積水　次郎';
+    this.branchName = '大阪北支店';
+
+    this.displayDate = this.getSystemDate();
+  }
+
+  /**
+  * ロカールに時刻を取得する
+  */
+  ngAfterViewInit() {
     setInterval(() => {
       this.systemDate = new Date();
       this.displayDate = this.getSystemDate();
@@ -44,7 +44,11 @@ export class AppNavigator implements OnInit{
     return `${this.systemDate.toLocaleDateString()}(${this.day[this.systemDate.getDay()]}) ${this.systemDate.toLocaleTimeString().slice(0, -3)}`;
   }
 
-  logoClick($event){
+  public logoClick($event) {
+
+  }
+
+  public logOut($event) {
 
   }
 
