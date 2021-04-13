@@ -7,7 +7,7 @@ import { ShHttpClientService, } from 'sh-http-client';
 @Injectable()
 export class CommonService {
     
-    // private readonly BASE_URL: string = 'http://localhost:8080/api';
+    //private readonly BASE_URL: string = 'http://localhost:8080/api';
 
     private readonly BASE_URL: string = 'http://10.96.8.123:80/ODISDev/api';
 
