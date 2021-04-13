@@ -495,7 +495,7 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
     dt.bulkApprovalPersonID_final = '';
     initData.push(dt);
 
-    // 労災
+    // 労災aaaaa
     dt = new ODIS0020OrderDetaiSplitBean();
     dt.insKubun           = Const.InsKubun.Normal;
     dt.propertyNo         = this.paramInit.propertyNo;
