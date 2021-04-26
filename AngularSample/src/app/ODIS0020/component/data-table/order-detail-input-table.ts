@@ -12,6 +12,8 @@ import { ODIS0020OrderDetaiSplitBean } from '../../entities/odis0020-OrderDetail
 import { AppComponent} from 'app/app.component';
 import { MatTable } from '@angular/material';
 import { ODIS0020Service } from 'app/ODIS0020/services/odis0020-service';
+import { CommonService } from "app/common/common.service";
+import { ODIS0020Form } from 'app/ODIS0020/entities/odis0020-Form.entity';
 
 @Component({
   selector: "shiwake-table",
@@ -123,6 +125,7 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
     private datePipe: DatePipe,
     private appComponent: AppComponent,
     private odis0020Service: ODIS0020Service,
+    private orderService: CommonService,
   ) {  }
 
   ngOnInit(): void {
@@ -717,6 +720,16 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
     dt.approvalDate_lv1 = requestTime;
     dt.approvalPerson_lv1 = this.loginInfo.empNmKnj;
     dt.approvalPersonID_lv1 = this.loginInfo.personAuthID;
+
+    /*this.orderService.getmailsender(Const.UrlLinkName.S0002_sendmail, new ODIS0020Form())*/
+    this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, this.loginInfo)
+      .then(
+        (response) => {
+          if(response.result === Const.ConnectResult.R0001){ 
+          }
+        }
+      );
+
   }
 
   /**
