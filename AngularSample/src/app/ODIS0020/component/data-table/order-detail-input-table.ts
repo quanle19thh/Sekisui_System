@@ -1,5 +1,6 @@
 import { ODIS0020UserApprovalPermission } from './../../entities/odis0020-ApprovalPermission.entity';
 import { LoginUserEntity } from './../../../ODIS0000/entities/odis0000-loginInfo.entity';
+import { ODIS0020SelApproval } from './../../entities/odis0020-selectApproval.entity';
 import { ODIS0020RowStatus } from './../../../ODIS0020/services/odis0020-DataEmitter.service';
 import { DatePipe } from '@angular/common';
 import { DataEmitter } from "../../services/odis0020-DataEmitter.service";
@@ -13,7 +14,6 @@ import { AppComponent} from 'app/app.component';
 import { MatTable } from '@angular/material';
 import { ODIS0020Service } from 'app/ODIS0020/services/odis0020-service';
 import { CommonService } from "app/common/common.service";
-import { ODIS0020Form } from 'app/ODIS0020/entities/odis0020-Form.entity';
 
 @Component({
   selector: "shiwake-table",
@@ -721,7 +721,11 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
     dt.approvalPerson_lv1 = this.loginInfo.empNmKnj;
     dt.approvalPersonID_lv1 = this.loginInfo.personAuthID;
 
-    /*this.orderService.getmailsender(Const.UrlLinkName.S0002_sendmail, new ODIS0020Form())*/
+     let SelApproval = new ODIS0020SelApproval();
+     SelApproval.jgyshCd = this.loginInfo.jgyshCd
+     SelApproval.Approval = "承認第１承認者"
+
+    /*this.orderService.getmailsender(Const.UrlLinkName.S0002_sendmail,SelApproval)*/
     this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, this.loginInfo)
       .then(
         (response) => {
