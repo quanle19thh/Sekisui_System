@@ -4,6 +4,6 @@ export class ODIS0020SelApproval {
 	jgyshCd: string;
 
     /** 選択承認者 */
-	approval: number;
+	approval: string;
 
 }
