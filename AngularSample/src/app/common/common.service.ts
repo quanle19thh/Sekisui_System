@@ -26,16 +26,6 @@ export class CommonService {
 
     }
 
-    public getmailsender(url: string, data: any = null): Promise<ApiResponseBody<any>> {
-        return this.shApiService.post<any[]>(this.BASE_URL + `${url}/`, data)
-            .then((res => {
-                const response: any = res;
-                return response;
-            }))
-            .catch(this.handleError);
-
-    }
-
     public fetchAuthorization(url: string): Promise<ApiResponseBody<any>> {
         return this.shApiService.post<any[]>(this.BASE_URL + `/${url}/`, null)
             .then((res => {

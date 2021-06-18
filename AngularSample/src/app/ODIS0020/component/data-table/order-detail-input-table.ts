@@ -706,6 +706,19 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
     dt.requestDate = requestTime;
     dt.requester = this.loginInfo.empNmKnj;
     dt.requesterID = this.loginInfo.personAuthID;
+
+        /*メール送信*/
+        let SelApproval = new ODIS0020SelApproval();
+        SelApproval.jgyshCd = this.loginInfo.jgyshCd
+        SelApproval.approval = Const.ApprovalLevel.OneLevel
+    
+        this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
+          .then(
+            (response) => {
+              if(response.result === Const.ConnectResult.R0001){ 
+              }
+            }
+          );
   }
 
   /**
@@ -721,11 +734,11 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
     dt.approvalPerson_lv1 = this.loginInfo.empNmKnj;
     dt.approvalPersonID_lv1 = this.loginInfo.personAuthID;
 
-     let SelApproval = new ODIS0020SelApproval();
-     SelApproval.jgyshCd = this.loginInfo.jgyshCd
-     SelApproval.approval = "承認第１承認者"
+    /*メール送信*/
+    let SelApproval = new ODIS0020SelApproval();
+    SelApproval.jgyshCd = this.loginInfo.jgyshCd
+    SelApproval.approval = Const.ApprovalLevel.TwoLevels
 
-    /*this.orderService.getmailsender(Const.UrlLinkName.S0002_sendmail,SelApproval)*/
     this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
       .then(
         (response) => {
@@ -749,6 +762,19 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
     dt.approvalPerson_lv2 = this.loginInfo.empNmKnj;
     dt.approvalPersonID_lv2 = this.loginInfo.personAuthID;
 
+     /*メール送信*/
+     let SelApproval = new ODIS0020SelApproval();
+     SelApproval.jgyshCd = this.loginInfo.jgyshCd
+     SelApproval.approval = Const.ApprovalLevel.ThreeLevels
+        
+     this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
+        .then(
+          (response) => {
+            if(response.result === Const.ConnectResult.R0001){ 
+          }
+        }
+      );
+
   }
 
   /**
@@ -763,6 +789,19 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
     dt.approvalDate_lv3 = requestTime;
     dt.approvalPerson_lv3 = this.loginInfo.empNmKnj;
     dt.approvalPersonID_lv3 = this.loginInfo.personAuthID;
+
+     /*メール送信*/
+     let SelApproval = new ODIS0020SelApproval();
+     SelApproval.jgyshCd = this.loginInfo.jgyshCd
+     SelApproval.approval = Const.ApprovalLevel.FourLevels
+        
+     this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
+        .then(
+          (response) => {
+            if(response.result === Const.ConnectResult.R0001){ 
+          }
+        }
+      );
 
   }
 
@@ -1103,6 +1142,19 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
         element.bulkRequesterID = this.loginInfo.personAuthID;
       }
     })
+    
+     /*メール送信*/
+     let SelApproval = new ODIS0020SelApproval();
+     SelApproval.jgyshCd = this.loginInfo.jgyshCd
+     SelApproval.approval = Const.ApprovalLevel.OneLevel
+        
+     this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
+        .then(
+          (response) => {
+            if(response.result === Const.ConnectResult.R0001){ 
+          }
+        }
+      );
   }
 
   /**
@@ -1123,6 +1175,19 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
           element.bulkApprovalPersonID_lv1 = this.loginInfo.personAuthID;
         }
       })
+
+     /*メール送信*/
+     let SelApproval = new ODIS0020SelApproval();
+     SelApproval.jgyshCd = this.loginInfo.jgyshCd
+     SelApproval.approval = Const.ApprovalLevel.TwoLevels
+        
+     this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
+        .then(
+          (response) => {
+            if(response.result === Const.ConnectResult.R0001){ 
+          }
+        }
+      );
   }
   /**
    * 一括最承認２
@@ -1142,6 +1207,19 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
           element.bulkApprovalPersonID_lv2 = this.loginInfo.personAuthID;
         }
       })
+  
+     /*メール送信*/
+     let SelApproval = new ODIS0020SelApproval();
+     SelApproval.jgyshCd = this.loginInfo.jgyshCd
+     SelApproval.approval = Const.ApprovalLevel.ThreeLevels
+        
+     this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
+        .then(
+          (response) => {
+            if(response.result === Const.ConnectResult.R0001){ 
+          }
+        }
+      );
   }
 
   /**
@@ -1162,6 +1240,19 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
           element.bulkApprovalPersonID_lv3 = this.loginInfo.personAuthID;
         }
       })
+
+     /*メール送信*/
+     let SelApproval = new ODIS0020SelApproval();
+     SelApproval.jgyshCd = this.loginInfo.jgyshCd
+     SelApproval.approval = Const.ApprovalLevel.FourLevels
+        
+     this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
+        .then(
+          (response) => {
+            if(response.result === Const.ConnectResult.R0001){ 
+          }
+        }
+      );
   }
 
   /**
