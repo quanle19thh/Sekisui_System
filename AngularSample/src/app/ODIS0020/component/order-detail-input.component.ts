@@ -2046,10 +2046,52 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
     //一時データを保持する
     this.saveTemporaryData();
 
-    var param = { prop: this.paramInit.propertyNo,  // 物件管理Ｎｏ
-                  cntr: this.paramInit.contractNum} // 契約番号
-    //画面遷移
-    this.router.navigate([Const.UrlSetting.U0008],{ queryParams: param,skipLocationChange: false, replaceUrl: false});
+     //サーバに更新データを送る。
+    var tmp: ODIS0020OrderDetaiSplitBean[] = [];
+
+    // 再連番 設定
+    this.reCountDetailNo(this.childSekkei.orderData);   // 設計
+    this.reCountDetailNo(this.childHontai.orderData);   // 本体
+    this.reCountDetailNo(this.childKaitai.orderData);   // 解体
+    this.reCountDetailNo(this.childZouEn1.orderData);   // 造園１
+    this.reCountDetailNo(this.childZouEn2.orderData);   // 造園２
+    
+    // 受注枝番 マージ
+    this.createOrderData(tmp, this.childSekkei.orderData);    // 設計
+    this.createOrderData(tmp, this.childHontai.orderData);    // 本体
+    this.createOrderData(tmp, this.childKaitai.orderData);    // 解体
+    this.createOrderData(tmp, this.childZouEn1.orderData);    // 造園１
+    this.createOrderData(tmp, this.childZouEn2.orderData);    // 造園２
+
+    this.paramUpd.propertyNo = this.paramInit.propertyNo;     // 物件管理Ｎｏ
+    this.paramUpd.contractNum = this.paramInit.contractNum;   // 契約書番号
+    this.paramUpd.orderDetailList = tmp;                      // 一覧データ
+
+    // アクセストークン取得
+    this.paramUpd.token = sessionStorage.getItem(Const.General.AccessToken);
+
+    this.isLoading = true;
+/*
+    this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_UpdateMsgLess, this.paramUpd)
+    .then(
+      (response) => {
+        this.isLoading = false;
+*/
+          var param = { prop: this.paramInit.propertyNo,  // 物件管理Ｎｏ
+                        cntr: this.paramInit.contractNum} // 契約番号
+          //画面遷移
+          this.router.navigate([Const.UrlSetting.U0008],{ queryParams: param,skipLocationChange: false, replaceUrl: false});
+/*
+      }
+    )
+    .finally(
+      ()=>{
+        //ロード画面を解除する。
+        this.isLoading = false;
+      }
+    )
+*/
+
   }
 
   public changeOrderReceiptStt($event){

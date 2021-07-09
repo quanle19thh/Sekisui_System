@@ -706,6 +706,19 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
     dt.requestDate = requestTime;
     dt.requester = this.loginInfo.empNmKnj;
     dt.requesterID = this.loginInfo.personAuthID;
+
+    let SelApproval = new ODIS0020SelApproval();
+    SelApproval.jgyshCd = this.loginInfo.jgyshCd
+    SelApproval.approval = "1";
+
+   /*this.orderService.getmailsender(Const.UrlLinkName.S0002_sendmail,SelApproval)*/
+   this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
+     .then(
+       (response) => {
+         if(response.result === Const.ConnectResult.R0001){ 
+         }
+       }
+     );
   }
 
   /**
@@ -723,7 +736,7 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
 
      let SelApproval = new ODIS0020SelApproval();
      SelApproval.jgyshCd = this.loginInfo.jgyshCd
-     SelApproval.approval = "承認第１承認者"
+     SelApproval.approval = "2"
 
     /*this.orderService.getmailsender(Const.UrlLinkName.S0002_sendmail,SelApproval)*/
     this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)

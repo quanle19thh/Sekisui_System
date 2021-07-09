@@ -59,6 +59,7 @@ export namespace Const{
         export const S0002_UPDATE = '/ODIS0020/update';
         export const S0002_GetOrderDetailFile = '/ODIS0020/download';
         export const S0002_UpdateAndDownload = '/ODIS0020/updateAndDownload';
+        export const S0002_UpdateMsgLess = '/ODIS0020/updateMsgLess';
         export const S0002_GetSuchOAP = '/ODIS0020/getSuchOAP';
         export const S0002_sendmail = '/ODIS0020/sendmail';
         export const S0003_Init = '/ODIS0030/init';
