@@ -1,5 +1,6 @@
 <loading-spinner *ngIf="isLoading"></loading-spinner>
-<div *ngIf="isInitFlg">
+
+<div *ngIf="isInitFlg" >
     <section class="upperSection">
         <div class="mainInfo">
             <section class="orderInfo">
@@ -155,6 +156,7 @@
                     </tbody>
                 </table>
             </div>
+            
             <div class="tbl2">
                 <table>
                     <thead id="theadHeight">
@@ -347,5 +349,6 @@
             </div>
         </div>
         <ng-container *ngComponentOutlet="modal"></ng-container>
+        <!-- <shiwake-table CustomerInfo=orderCustomerInfo></shiwake-table> -->
     </div>
 </div>

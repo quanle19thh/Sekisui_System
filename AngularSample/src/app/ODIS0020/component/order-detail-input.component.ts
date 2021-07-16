@@ -38,6 +38,8 @@ const FileSaver = require('file-saver');
 
 export class OrderDetailInputComponent implements OnInit, OnDestroy {
 
+  @ViewChild('CustomerInfo', { static: false }) childCustomerInfo: any
+
   @ViewChild('tabSekkei', { static: false }) childSekkei: any
   @ViewChild('tabHontai', { static: false }) childHontai: any
   @ViewChild('tabKaitai', { static: false }) childKaitai: any
@@ -2043,6 +2045,12 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
    */
   public moveToOrderGrossProfitPage($event){
 
+    //登録警告を表示する。
+    const confirm = window.confirm(Const.WarningMsg.W0005);
+    if(!confirm){
+      return;    
+    }
+
     //一時データを保持する
     this.saveTemporaryData();
 
@@ -2071,17 +2079,14 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
     this.paramUpd.token = sessionStorage.getItem(Const.General.AccessToken);
 
     this.isLoading = true;
-/*
-    this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_UpdateMsgLess, this.paramUpd)
+
+    this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_UPDATE, this.paramUpd)
     .then(
       (response) => {
-        this.isLoading = false;
-*/
-          var param = { prop: this.paramInit.propertyNo,  // 物件管理Ｎｏ
-                        cntr: this.paramInit.contractNum} // 契約番号
-          //画面遷移
-          this.router.navigate([Const.UrlSetting.U0008],{ queryParams: param,skipLocationChange: false, replaceUrl: false});
-/*
+        var param = { prop: this.paramInit.propertyNo,  // 物件管理Ｎｏ
+          cntr: this.paramInit.contractNum} // 契約番号
+        //画面遷移
+        this.router.navigate([Const.UrlSetting.U0008],{ queryParams: param,skipLocationChange: false, replaceUrl: false});
       }
     )
     .finally(
@@ -2090,7 +2095,7 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
         this.isLoading = false;
       }
     )
-*/
+
 
   }
 

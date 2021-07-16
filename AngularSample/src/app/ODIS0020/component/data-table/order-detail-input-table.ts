@@ -14,6 +14,8 @@ import { AppComponent} from 'app/app.component';
 import { MatTable } from '@angular/material';
 import { ODIS0020Service } from 'app/ODIS0020/services/odis0020-service';
 import { CommonService } from "app/common/common.service";
+import { ODIS0020CustomerInfoBean } from '../../entities/odis0020-OrderInformation.entity'
+
 
 @Component({
   selector: "shiwake-table",
@@ -22,6 +24,7 @@ import { CommonService } from "app/common/common.service";
   encapsulation: ViewEncapsulation.None,
 })
 export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
+  @Input() CustomerInfo: ODIS0020CustomerInfoBean;
   @Input() orderData: ODIS0020OrderDetaiSplitBean[] = [];
   @Input() tabName:string;
   @Output() sendOrderData = new EventEmitter<DataEmitter>();
@@ -708,17 +711,24 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
     dt.requesterID = this.loginInfo.personAuthID;
 
     let SelApproval = new ODIS0020SelApproval();
+  
     SelApproval.jgyshCd = this.loginInfo.jgyshCd
     SelApproval.approval = "1";
 
-   /*this.orderService.getmailsender(Const.UrlLinkName.S0002_sendmail,SelApproval)*/
+    SelApproval.orderDetailList = new Array;
+    SelApproval.orderDetailList.push(dt);
+
+    SelApproval.CustomerInfo = new Array;
+    SelApproval.CustomerInfo.push(this.CustomerInfo);
+
+   /*this.orderService.getmailsender(Const.UrlLinkName.S0002_sendmail,SelApproval)
    this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
      .then(
        (response) => {
          if(response.result === Const.ConnectResult.R0001){ 
          }
        }
-     );
+     );*/
   }
 
   /**
@@ -738,14 +748,14 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
      SelApproval.jgyshCd = this.loginInfo.jgyshCd
      SelApproval.approval = "2"
 
-    /*this.orderService.getmailsender(Const.UrlLinkName.S0002_sendmail,SelApproval)*/
+    /*this.orderService.getmailsender(Const.UrlLinkName.S0002_sendmail,SelApproval)
     this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
       .then(
         (response) => {
           if(response.result === Const.ConnectResult.R0001){ 
           }
         }
-      );
+      );*/
 
   }
 

@@ -165,4 +165,15 @@ export class ODIS0020OrderDetaiSplitBean{
   /** 支払金額 */
   paymentAmount: string = '';
 
+  /** 工事物件名カナ */
+  constructionKata: string;
+
+  /** 工事物件名漢字 */
+  constructionHira: string;
+  
+  /** 契約書番号 */
+  contractorCode: string;
+  
+  /** 契約者名漢字 */
+  contractorName: string;
 }

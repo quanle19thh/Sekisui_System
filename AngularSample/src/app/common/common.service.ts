@@ -11,6 +11,8 @@ export class CommonService {
 
     private readonly BASE_URL: string = 'http://10.96.8.123:80/ODISDev/api';
 
+    //private readonly BASE_URL: string = 'http://10.96.8.123:80/ODISTEST/api';
+    
     constructor(
         private shApiService: ShHttpClientService,
         private http: HttpClient,
@@ -25,6 +27,7 @@ export class CommonService {
             .catch(this.handleError);
 
     }
+
 
     public getmailsender(url: string, data: any = null): Promise<ApiResponseBody<any>> {
         return this.shApiService.post<any[]>(this.BASE_URL + `${url}/`, data)
