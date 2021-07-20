@@ -1,4 +1,5 @@
 <loading-spinner *ngIf="isLoading"></loading-spinner>
+<shiwake-table CustomerInfo="orderCustomerInfo"></shiwake-table>
 
 <div *ngIf="isInitFlg" >
     <section class="upperSection">
@@ -349,6 +350,5 @@
             </div>
         </div>
         <ng-container *ngComponentOutlet="modal"></ng-container>
-        <!-- <shiwake-table CustomerInfo=orderCustomerInfo></shiwake-table> -->
     </div>
 </div>
