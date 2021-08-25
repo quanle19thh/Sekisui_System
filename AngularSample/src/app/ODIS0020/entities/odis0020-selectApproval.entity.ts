@@ -9,9 +9,6 @@ export class ODIS0020SelApproval {
     /** 選択承認者 */
 	approval: string;
 
-	/** 発注物件データ */
-	CustomerInfo: ODIS0020CustomerInfoBean[];
-
 	/** 発注明細データ */
 	orderDetailList: ODIS0020OrderDetaiSplitBean[];
 

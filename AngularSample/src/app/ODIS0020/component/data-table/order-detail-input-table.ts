@@ -24,7 +24,7 @@ import { ODIS0020CustomerInfoBean } from '../../entities/odis0020-OrderInformati
   encapsulation: ViewEncapsulation.None,
 })
 export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
-  @Input() CustomerInfo: ODIS0020CustomerInfoBean;
+  @Input() CustomerInfo: ODIS0020CustomerInfoBean = new ODIS0020CustomerInfoBean;
   @Input() orderData: ODIS0020OrderDetaiSplitBean[] = [];
   @Input() tabName:string;
   @Output() sendOrderData = new EventEmitter<DataEmitter>();
@@ -718,17 +718,13 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
     SelApproval.orderDetailList = new Array;
     SelApproval.orderDetailList.push(dt);
 
-    SelApproval.CustomerInfo = new Array;
-    SelApproval.CustomerInfo.push(this.CustomerInfo);
-
-   /*this.orderService.getmailsender(Const.UrlLinkName.S0002_sendmail,SelApproval)
    this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
      .then(
        (response) => {
          if(response.result === Const.ConnectResult.R0001){ 
          }
        }
-     );*/
+     );
   }
 
   /**
@@ -744,18 +740,21 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
     dt.approvalPerson_lv1 = this.loginInfo.empNmKnj;
     dt.approvalPersonID_lv1 = this.loginInfo.personAuthID;
 
-     let SelApproval = new ODIS0020SelApproval();
-     SelApproval.jgyshCd = this.loginInfo.jgyshCd
-     SelApproval.approval = "2"
+    let SelApproval = new ODIS0020SelApproval();
+  
+    SelApproval.jgyshCd = this.loginInfo.jgyshCd
+    SelApproval.approval = "2";
 
-    /*this.orderService.getmailsender(Const.UrlLinkName.S0002_sendmail,SelApproval)
-    this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
-      .then(
-        (response) => {
-          if(response.result === Const.ConnectResult.R0001){ 
-          }
-        }
-      );*/
+    SelApproval.orderDetailList = new Array;
+    SelApproval.orderDetailList.push(dt);
+
+   this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
+     .then(
+       (response) => {
+         if(response.result === Const.ConnectResult.R0001){ 
+         }
+       }
+     );
 
   }
 
@@ -772,6 +771,21 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
     dt.approvalPerson_lv2 = this.loginInfo.empNmKnj;
     dt.approvalPersonID_lv2 = this.loginInfo.personAuthID;
 
+    let SelApproval = new ODIS0020SelApproval();
+  
+    SelApproval.jgyshCd = this.loginInfo.jgyshCd
+    SelApproval.approval = "3";
+
+    SelApproval.orderDetailList = new Array;
+    SelApproval.orderDetailList.push(dt);
+
+   this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
+     .then(
+       (response) => {
+         if(response.result === Const.ConnectResult.R0001){ 
+         }
+       }
+     );
   }
 
   /**
@@ -787,6 +801,21 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
     dt.approvalPerson_lv3 = this.loginInfo.empNmKnj;
     dt.approvalPersonID_lv3 = this.loginInfo.personAuthID;
 
+    let SelApproval = new ODIS0020SelApproval();
+  
+    SelApproval.jgyshCd = this.loginInfo.jgyshCd
+    SelApproval.approval = "4";
+
+    SelApproval.orderDetailList = new Array;
+    SelApproval.orderDetailList.push(dt);
+
+   this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
+     .then(
+       (response) => {
+         if(response.result === Const.ConnectResult.R0001){ 
+         }
+       }
+     );
   }
 
   /**
@@ -1119,13 +1148,29 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
     let currTime = Date.now();
     let requestTime = this.datePipe.transform(currTime, "yy/MM/dd").toString();
 
+    let SelApproval = new ODIS0020SelApproval();
+    SelApproval.orderDetailList = new Array;
+
     this.orderData.forEach(element=>{
       if(this.comCompnt.setValue(element.bulkRequestDate) ==''){
         element.bulkRequestDate = requestTime;
         element.bulkRequester   = this.loginInfo.empNmKnj;
         element.bulkRequesterID = this.loginInfo.personAuthID;
+  
+        SelApproval.jgyshCd = this.loginInfo.jgyshCd
+        SelApproval.approval = "1";
+    
+        SelApproval.orderDetailList.push(element);
       }
     })
+
+   this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
+     .then(
+       (response) => {
+         if(response.result === Const.ConnectResult.R0001){ 
+         }
+       }
+     );
   }
 
   /**
@@ -1137,6 +1182,9 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
       let currTime = Date.now();
       let approvalTime = this.datePipe.transform(currTime, "yy/MM/dd").toString();
 
+      let SelApproval = new ODIS0020SelApproval();
+      SelApproval.orderDetailList = new Array;
+
       this.orderData.forEach(element=>{
         if(this.comCompnt.setValue(element.bulkRequestDate) != '' && 
            this.comCompnt.setValue(element.bulkApprovalDate_lv1) == '' && 
@@ -1144,8 +1192,21 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
           element.bulkApprovalDate_lv1     = approvalTime;
           element.bulkApprovalPerson_lv1   = this.loginInfo.empNmKnj;
           element.bulkApprovalPersonID_lv1 = this.loginInfo.personAuthID;
+  
+          SelApproval.jgyshCd = this.loginInfo.jgyshCd
+          SelApproval.approval = "2";
+      
+          SelApproval.orderDetailList.push(element);
         }
       })
+
+      this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
+      .then(
+        (response) => {
+          if(response.result === Const.ConnectResult.R0001){ 
+          }
+        }
+      );
   }
   /**
    * 一括最承認２
@@ -1156,6 +1217,9 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
       let currTime = Date.now();
       let approvalTime = this.datePipe.transform(currTime, "yy/MM/dd").toString();
 
+      let SelApproval = new ODIS0020SelApproval();
+      SelApproval.orderDetailList = new Array;
+
       this.orderData.forEach(element=>{
         if(this.comCompnt.setValue(element.bulkApprovalDate_lv1) != '' &&
            this.comCompnt.setValue(element.bulkApprovalDate_lv2) == '' &&
@@ -1163,8 +1227,20 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
           element.bulkApprovalDate_lv2   = approvalTime;
           element.bulkApprovalPerson_lv2 = this.loginInfo.empNmKnj;
           element.bulkApprovalPersonID_lv2 = this.loginInfo.personAuthID;
+  
+          SelApproval.jgyshCd = this.loginInfo.jgyshCd
+          SelApproval.approval = "3";
+      
+          SelApproval.orderDetailList.push(element);
         }
       })
+      this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
+      .then(
+        (response) => {
+          if(response.result === Const.ConnectResult.R0001){ 
+          }
+        }
+      );
   }
 
   /**
@@ -1176,6 +1252,9 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
       let currTime = Date.now();
       let approvalTime = this.datePipe.transform(currTime, "yy/MM/dd").toString();
 
+      let SelApproval = new ODIS0020SelApproval();;
+      SelApproval.orderDetailList = new Array;
+
       this.orderData.forEach(element=>{
         if(this.comCompnt.setValue(element.bulkApprovalDate_lv2) !=''&&
            this.comCompnt.setValue(element.bulkApprovalDate_lv3) ==''&&
@@ -1183,8 +1262,20 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
           element.bulkApprovalDate_lv3   = approvalTime;
           element.bulkApprovalPerson_lv3 = this.loginInfo.empNmKnj;
           element.bulkApprovalPersonID_lv3 = this.loginInfo.personAuthID;
+  
+          SelApproval.jgyshCd = this.loginInfo.jgyshCd
+          SelApproval.approval = "4";
+      
+          SelApproval.orderDetailList.push(element);
         }
       })
+      this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
+      .then(
+        (response) => {
+          if(response.result === Const.ConnectResult.R0001){ 
+          }
+        }
+      );
   }
 
   /**

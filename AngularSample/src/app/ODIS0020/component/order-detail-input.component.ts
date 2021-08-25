@@ -325,8 +325,8 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
               this.approvalPermission = this.pageTotalInfo.approvalPermission;
 
               // 「設計」タブ
-              this.tblSekkei = this.splitOrderDetail(this.orderDetaiSplitlList, Const.JuuChuuEdaban.Sekkei);
-              
+              this.tblSekkei = this.splitOrderDetail(this.orderDetaiSplitlList, Const.JuuChuuEdaban.Sekkei); 
+
               // 「ハウス」タブ
               this.tblHouse = this.splitOrderDetail(this.orderDetaiSplitlList, Const.JuuChuuEdaban.Hontai);
               
@@ -1778,6 +1778,90 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
     // アクセストークン取得
     
     this.paramUpd.token = sessionStorage.getItem(Const.General.AccessToken);
+    this.paramUpd.orderGrossFlg = '0';
+
+    this.orderService.getDownLoad(Const.UrlLinkName.S0002_UpdateAndDownload, this.paramUpd)
+    .subscribe((response:HttpResponse<any>) => {
+          try{
+            //ファイル名を取得する。
+            let fileName = response.headers.get('Content-Disposition').replace('attachment; filename=','');
+            //デイコード 
+            fileName = decodeURI(fileName);            
+            //ダウンロードデータを取得する。
+            let dataStream: Blob = new Blob([response.body], {type: response.headers.get('Content-Type')});
+            //保存する。
+            FileSaver.saveAs(dataStream, fileName);
+          }
+          catch(error){
+            //エラーが発生した場合、エラーメッセージを表示する。
+            alert(Const.ErrorMsg.E0020);
+          }
+          finally{
+            this.isLoading = false;
+          }
+     })    
+
+  }
+
+  /**
+   * ダウンロードする前に、一回登録してから帳票を出力する(粗利率)
+   * @param $event 
+   */
+   public updateDownloadOrderGrossDetailExportFile($event){	  
+  
+    //登録警告を表示する。
+    const confirm = window.confirm(Const.WarningMsg.W0005);
+    if(!confirm){
+      return;    
+    }
+    
+    // 入力チェック(「設計」タブ)
+    if(this.updCheck(this.childSekkei.orderData)){
+      return;
+    }
+    // 入力チェック(「本体」タブ)
+    if(this.updCheck(this.childHontai.orderData)){
+      return;
+    }
+    // 入力チェック(「解体」タブ)
+    if(this.updCheck(this.childKaitai.orderData)){
+      return;
+    }
+    // 入力チェック(「造園①」タブ)
+    if(this.updCheck(this.childZouEn1.orderData)){
+      return;
+    }
+    // 入力チェック(「造園②」タブ)
+    if(this.updCheck(this.childZouEn2.orderData)){
+      return;
+    }
+
+    // ローディング開始
+    this.isLoading = true;
+    //サーバに更新データを送る。
+    var tmp: ODIS0020OrderDetaiSplitBean[] = [];
+
+    // 再連番 設定
+    this.reCountDetailNo(this.childSekkei.orderData);   // 設計
+    this.reCountDetailNo(this.childHontai.orderData);   // 本体
+    this.reCountDetailNo(this.childKaitai.orderData);   // 解体
+    this.reCountDetailNo(this.childZouEn1.orderData);   // 造園１
+    this.reCountDetailNo(this.childZouEn2.orderData);   // 造園２
+
+    // 受注枝番 マージ
+    this.createOrderData(tmp, this.childSekkei.orderData);    // 設計
+    this.createOrderData(tmp, this.childHontai.orderData);    // 本体
+    this.createOrderData(tmp, this.childKaitai.orderData);    // 解体
+    this.createOrderData(tmp, this.childZouEn1.orderData);    // 造園１
+    this.createOrderData(tmp, this.childZouEn2.orderData);    // 造園２
+
+    this.paramUpd.propertyNo = this.paramInit.propertyNo;     // 物件管理Ｎｏ
+    this.paramUpd.contractNum = this.paramInit.contractNum;   // 契約書番号
+    this.paramUpd.orderDetailList = tmp;                      // 一覧データ
+    // アクセストークン取得
+    
+    this.paramUpd.token = sessionStorage.getItem(Const.General.AccessToken);
+    this.paramUpd.orderGrossFlg = '1';
 
     this.orderService.getDownLoad(Const.UrlLinkName.S0002_UpdateAndDownload, this.paramUpd)
     .subscribe((response:HttpResponse<any>) => {

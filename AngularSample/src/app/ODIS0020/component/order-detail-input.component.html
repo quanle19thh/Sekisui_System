@@ -1,5 +1,4 @@
 <loading-spinner *ngIf="isLoading"></loading-spinner>
-<shiwake-table CustomerInfo="orderCustomerInfo"></shiwake-table>
 
 <div *ngIf="isInitFlg" >
     <section class="upperSection">
@@ -343,10 +342,13 @@
                 <div style="transform: translateX(341%);" class="SC0020-bottomButton">
                     <button mat-button id="btnMeisaiIchiran" class="btn btn-info m-1 border" tabindex="20" (click)="updateDownloadOrderDetailExportFile($event)">明細一覧</button>
                 </div>
+                <!-- <div style="transform: translateX(276%);" class="SC0020-bottomButton">
+                    <button mat-button id="btnMeisaiIchiranGross" class="btn btn-info m-1 border" tabindex="21" (click)="updateDownloadOrderGrossDetailExportFile($event)">願書一覧</button>
+                </div> -->
             </div>
             <div style="right: 42px;" class="SC0020-bottomButton">
                 <button mat-button id="btnKoushin" class="btn btn-info m-1 border"
-                    (click)="finalUpdateProgress()" tabindex="21">更新終了</button>
+                    (click)="finalUpdateProgress()" tabindex="22">更新終了</button>
             </div>
         </div>
         <ng-container *ngComponentOutlet="modal"></ng-container>

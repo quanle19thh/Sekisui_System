@@ -1,3 +1,5 @@
+import { ODIS0020CustomerInfoBean } from './odis0020-OrderInformation.entity'
+
 /**
  * 発注明細 明細分割
  */
@@ -176,4 +178,5 @@ export class ODIS0020OrderDetaiSplitBean{
   
   /** 契約者名漢字 */
   contractorName: string;
-}
+
+}  

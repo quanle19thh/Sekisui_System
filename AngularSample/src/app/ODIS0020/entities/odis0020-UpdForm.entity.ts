@@ -12,6 +12,9 @@ export class ODIS0020UpdForm{
     /** アクセストークン */
     token: string;
 
+    /** 粗利率出力フラグ */
+    orderGrossFlg: string;
+
 	/** 発注明細データ */
     orderDetailList: ODIS0020OrderDetaiSplitBean[];
 }
