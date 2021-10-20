@@ -173,6 +173,7 @@ export class ODIS0060OrderDetailBunkatsu {
     /** 支払金額 */
     paymentAmount: string;
 
+
     constructor() { }
 
 }
@@ -187,6 +188,7 @@ export class ODIS0060Session {
 
     /**分割データ */
     bunkatsuData: ODIS0060OrderDetailBunkatsu[];
+
 
     constructor() { }
 }

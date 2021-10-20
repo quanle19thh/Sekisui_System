@@ -9,6 +9,19 @@
                 <div class="bunkatsu-table-responsive" style="margin-top: 10px;">
                     <table mat-table [dataSource]="bunkatsuData" class="bunkatsu-table table table-hover table-sm"
                         id="bunkatsuTable">
+
+                        <!--Header 明細確定 -->
+                        <ng-container matColumnDef="bunKaku">
+                            <th style="min-width: 26px; width: 26px; padding: 0" class="color-input-1" mat-header-cell *matHeaderCellDef
+                                [attr.rowSpan]="2">確<br>定</th>
+                        </ng-container>
+                        <!-- Body 明細確定 -->
+                        <ng-container matColumnDef="spritKakutei">
+                            <th style="padding: 0" class="" mat-header-cell *matHeaderCellDef></th>
+                            <td style="min-width: 26px; width: 26px; padding: 0 5px" class="tdCenter" mat-cell *matCellDef="let element">
+                                {{kakutei}}</td>
+                        </ng-container>
+
                         <!--Header 番号 -->
                         <ng-container matColumnDef="no">
                             <th style="min-width: 26px; width: 26px; padding: 0" class="color-input-1" mat-header-cell *matHeaderCellDef
@@ -90,9 +103,9 @@
                             <td style="width: 75px; min-width: 75px; text-align: center" mat-cell
                                 *matCellDef="let element; let i = index">
                                 <label *ngIf="element.requestDate != ''">{{element.requestDate}}</label>
-                                <button *ngIf="element.requestDate == ''"
+                                <!-- <button *ngIf="element.requestDate == ''"
                                     (click)="mainTableRequest($event, element)" mat-button
-                                    class="btn btn-outline-primary" tabindex="1">依頼</button>
+                                    class="btn btn-outline-primary" tabindex="1">依頼</button> -->
                             </td>
                         </ng-container>
 
@@ -264,8 +277,8 @@
                     <td style="text-align: center !important">{{ input.requestDate }}</td>
                     <td style="text-align: center !important">
                         <label *ngIf="input.requester != ''" style="margin: 0;">{{ input.requester }}</label>
-                        <button *ngIf="input.requester == ''" id="btnSubIrai" style="padding: 0; margin: 0" (click)="subTableRequest($event)"
-                            mat-button class="btn btn-outline-primary btn-small" tabindex="5">依頼</button>
+                        <!-- <button *ngIf="input.requester == ''" id="btnSubIrai" style="padding: 0; margin: 0" (click)="subTableRequest($event)"
+                            mat-button class="btn btn-outline-primary btn-small" tabindex="5">依頼</button> -->
                     </td>
 
                     <td *ngIf="this.approvalUnit>=2" class="tdCenter">{{input.approvalDate_lv1}}</td>
@@ -318,5 +331,15 @@
                 tabindex="10" (click)="backToOrderDetailInput()">閉じる
             </button>
         </div>
+        <div *ngIf="meisaiKakutei; else kakuteiButton" style="left: 127px;" class="SC0020-bottomButton" >
+            <button mat-button id="btnMeisaiKakutei" class="btn btn-danger m-1 border" disabled="{{isKakuteiFlg()}}"
+            (click)="onClick()" tabindex="11">確定</button>
+        </div>
+        <ng-template #kakuteiButton>
+            <div style="left: 127px;" class="SC0020-bottomButton" >
+                <button mat-button id="btnMeisaiKakutei" class="btn btn-info m-1 border" disabled="{{isKakuteiFlg()}}"
+                (click)="onClick()" tabindex="11">確定</button>
+            </div>
+        </ng-template>
     </div>
 </div>

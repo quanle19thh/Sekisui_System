@@ -9,6 +9,7 @@ import { DatePipe } from '@angular/common';
 import { ODIS0060OrderDetailBunkatsu, ODIS0060OrderShiwake, ODIS0060Session } from '../entities/odis0060-SplitDetail.entity';
 import { ODIS0020Service } from './../../ODIS0020/services/odis0020-service';
 import { ODIS0020OrderDetaiSplitBean } from './../../ODIS0020/entities/odis0020-OrderDetailSplit.entity';
+import { ODIS0020SelApproval } from './../../ODIS0020/entities/odis0020-selectApproval.entity';
 import { ODIS0060SplitDetailService } from '../services/split-detail-input-service';
 import { ODIS0060BunkatsuInsertService, ODIS0060RowStatus } from '../services/odis0060-AddBunkatsuDetail.service';
 import { Subscription } from 'rxjs';
@@ -30,13 +31,14 @@ export class SplitOrderDetailComponent implements OnInit, OnDestroy {
 
   /** 仕訳テーブルのヘッダーの1行目のカラム */
   mainHeaderCols: string[] = [
+    'bunKaku',
     'no',
     'orderPlanAmount',
     'bunkatsuHachuuSaki',
     "bunkatsuChumon",
     'comment',
     'irai',
-    'saishuu_shounin',
+    'saishuu_shounin',  
     'order',
     'received',
     'payment',
@@ -50,6 +52,7 @@ export class SplitOrderDetailComponent implements OnInit, OnDestroy {
 
   /** テーブルの全カラム */
   totalColumns: string[] = [
+    'spritKakutei', 
     'index',
     'orderPlanAmount1',
     'splitSupplierCode',
@@ -57,7 +60,7 @@ export class SplitOrderDetailComponent implements OnInit, OnDestroy {
     "splitOrderReceipt",
     'comment1',
     'requestDate',
-    'approvalDate_final',
+    'approvalDate_final',   
     'orderDate',
     'orderAmount',
     'receivedDate',
@@ -117,6 +120,11 @@ export class SplitOrderDetailComponent implements OnInit, OnDestroy {
 
   //仕訳テーブルのチェックボックス
   orderReceiptCheckStt: string = Const.OrderReceiptCheckType.UnCheck;
+
+  //明細確定ボタン
+  meisaiKakutei: boolean = false;
+  kakutei: string = '';
+  btnKakutei: boolean;
 
   /** 金額０でも更新可とする発注先コード */
   private readonly IGNORE_SUPPLIER = ['998'];
@@ -256,6 +264,15 @@ export class SplitOrderDetailComponent implements OnInit, OnDestroy {
     this.shiwakeData = this.splitService.getSplitTableData();
     this.tabName = this.getTabName(this.shiwakeData[0].detailKind);
     this.bunkatsuData = this.splitService.getDetailTableData();
+
+    // 明細確定
+    if(this.splitService.meisaiKakutei == '1'){
+      this.meisaiKakutei = true;
+      this.kakutei = '確';
+    }else{
+      this.meisaiKakutei = false;
+      this.kakutei = '';
+    }
 
     //詳細のチェックボックスの値を変数に入れる
     this.orderReceiptCheckStt = this.shiwakeData[0].orderReceipt;
@@ -577,10 +594,36 @@ export class SplitOrderDetailComponent implements OnInit, OnDestroy {
 
     let currTime = Date.now();
     let requestTime = this.datePipe.transform(currTime, "yy/MM/dd").toString();
-
     dt.requestDate = requestTime;
     dt.requester   = this.loginInfo.empNmKnj;
     dt.requesterID = this.loginInfo.personAuthID;
+
+    let SelApproval = new ODIS0020SelApproval();
+  
+    SelApproval.jgyshCd = this.loginInfo.jgyshCd;
+    SelApproval.approval = "1";
+
+    let ODIS0020dt = new ODIS0020OrderDetaiSplitBean;
+    ODIS0020dt.propertyNo = this.shiwakeData[0].propertyNo;
+    ODIS0020dt.orderBranchNo = this.shiwakeData[0].orderBranchNo;
+    ODIS0020dt.accountCode = this.shiwakeData[0].accountCode;
+    ODIS0020dt.journalCode = this.shiwakeData[0].journalCode;
+    ODIS0020dt.journalName = this.shiwakeData[0].journalName;
+    ODIS0020dt.orderSupplierCode = dt.splitSupplierCode;
+    ODIS0020dt.orderSupplierName = dt.splitSupplierName;
+    ODIS0020dt.orderPlanAmount =  this.shiwakeData[0].orderPlanAmount;
+    ODIS0020dt.orderSplitAmount = dt.orderSplitAmount;
+
+    SelApproval.orderDetailList = new Array;
+    SelApproval.orderDetailList.push(ODIS0020dt);
+
+   this.commonService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
+     .then(
+       (response) => {
+         if(response.result === Const.ConnectResult.R0001){ 
+         }
+       }
+     );
 
     this.resetAddTable();
   }
@@ -648,6 +691,33 @@ export class SplitOrderDetailComponent implements OnInit, OnDestroy {
     this.input.requestDate = requestTime;
     this.input.requester   = this.loginInfo.empNmKnj;
     this.input.requesterID = this.loginInfo.personAuthID;
+
+    let SelApproval = new ODIS0020SelApproval();
+  
+    SelApproval.jgyshCd = this.loginInfo.jgyshCd;
+    SelApproval.approval = "1";
+
+    let ODIS0020dt = new ODIS0020OrderDetaiSplitBean;
+    ODIS0020dt.propertyNo = this.shiwakeData[0].propertyNo;
+    ODIS0020dt.orderBranchNo = this.shiwakeData[0].orderBranchNo;
+    ODIS0020dt.accountCode = this.shiwakeData[0].accountCode;
+    ODIS0020dt.journalCode = this.shiwakeData[0].journalCode;
+    ODIS0020dt.journalName = this.shiwakeData[0].journalName;
+    ODIS0020dt.orderSupplierCode = this.input.splitSupplierCode;
+    ODIS0020dt.orderSupplierName = this.input.splitSupplierName;
+    ODIS0020dt.orderPlanAmount =  this.shiwakeData[0].orderPlanAmount;
+    ODIS0020dt.orderSplitAmount = this.input.orderSplitAmount;
+
+    SelApproval.orderDetailList = new Array;
+    SelApproval.orderDetailList.push(ODIS0020dt);
+
+   this.commonService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
+     .then(
+       (response) => {
+         if(response.result === Const.ConnectResult.R0001){ 
+         }
+       }
+     );
 
   }
 
@@ -799,7 +869,14 @@ export class SplitOrderDetailComponent implements OnInit, OnDestroy {
       dt.receivedAmount       = this.bunkatsuData[i].receivedAmount;
       dt.paymentDate          = this.bunkatsuData[i].paymentDate;
       dt.paymentAmount        = this.bunkatsuData[i].paymentAmount;
-
+      if(this.meisaiKakutei){
+        dt.splitDetailKakuFlag = '1'
+        dt.splitDetailKakuFlagDisp = '確'
+      }else{
+        dt.splitDetailKakuFlag = '0'
+        dt.splitDetailKakuFlagDisp = ''
+      }
+      
 
       senderDt.push(dt);
     }
@@ -810,6 +887,8 @@ export class SplitOrderDetailComponent implements OnInit, OnDestroy {
 
     //発注明細入力画面に返却するデータを設定する。
     this.odis0020Service.setReturnSplitData(senderDt);
+
+    JSON.parse(sessionStorage.getItem(Const.ScreenName.S0002EN)).orderDetailList = senderDt;
 
     //発注詳細入力画面に戻る前に、セッションを削除する
     sessionStorage.removeItem(Const.ScreenName.S0006EN);
@@ -955,4 +1034,28 @@ export class SplitOrderDetailComponent implements OnInit, OnDestroy {
   }
   
   // --------------------------------------- ▲▲ フォーカス系 処理 ▲▲ ---------------------------------------
+
+  //明細確定ボタン
+  public onClick(){
+    if(this.meisaiKakutei){
+      this.meisaiKakutei = false;
+      this.kakutei = '';
+    }else{
+      this.meisaiKakutei = true;
+      this.kakutei = '確';
+    }
+  }
+
+  /**
+   * 「却下」ボタンの活性か設定
+   */
+   public isKakuteiFlg() {   
+  
+    for(let bunkatsu of this.bunkatsuData){
+      if(bunkatsu.requestDate == ""){
+        return false;
+      }
+    }
+    return true;
+  }
 }

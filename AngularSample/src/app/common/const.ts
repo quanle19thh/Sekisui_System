@@ -195,6 +195,7 @@ export namespace Const{
         export const W0004 = '編集途中のデータがあります。\n編集途中のデータは破棄されますが、更新処理を行いますか？';
         export const W0005 = '表示されているデータをデータベースに登録しますが\nよろしいでしょうか？';
         export const W0006 = '却下しますか？';
+        export const W0007 = 'データを登録して印刷します。\nよろしいでしょうか？';
     }
 
     /**

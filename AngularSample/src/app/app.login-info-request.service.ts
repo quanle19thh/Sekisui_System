@@ -1,5 +1,6 @@
 import { Injectable, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router'
 import { Subject } from 'rxjs';
 import { CommonService } from './common/common.service';
 import { Const } from './common/const';
@@ -17,12 +18,22 @@ export class LoginInfoRequestService implements OnInit {
 
     private _loginInfo: LoginUserEntity;
 
+    private url: any;
+
+   
+
     constructor(
         private commonService: CommonService,
+        public router: Router,
+        public route: ActivatedRoute
     ) { }
 
     ngOnInit(): void {
+        this.url = this.route.snapshot.paramMap.get('id');
+        this.url = this.router.url;
         this.sendRequestUserInfo();
+        this.url = this.router.url;
+        this.url = this.url;
     }
 
     /** サーバーからログイン情報を取得 */

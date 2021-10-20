@@ -47,4 +47,6 @@ export class ODIS0060SplitDetailService {
     return this._bunkatsuData;
   }
 
+  public meisaiKakutei: string;
+
 }

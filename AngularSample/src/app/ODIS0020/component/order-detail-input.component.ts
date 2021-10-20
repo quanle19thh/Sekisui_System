@@ -25,6 +25,9 @@ import { ODIS0020OrderDetaiSplitBean } from '../entities/odis0020-OrderDetailSpl
 import { ODIS0020UpdForm } from '../entities/odis0020-UpdForm.entity';
 import { ODIS0020OrderCode } from '../entities/odis0020-OrderCode.entity';
 import { HttpResponse } from '@angular/common/http';
+import { toInteger } from '@ng-bootstrap/ng-bootstrap/util/util';
+import { ODIS0020SelApproval } from '../entities/odis0020-selectApproval.entity';
+import { LoginUserEntity } from 'app/ODIS0000/entities/odis0000-loginInfo.entity';
 
 declare var require: any;
 const FileSaver = require('file-saver');
@@ -33,7 +36,13 @@ const FileSaver = require('file-saver');
   selector: 'order-detail-input',
   templateUrl: './order-detail-input.component.html',
   styleUrls: ['./order-detail-input.component.css'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  // template:`
+  // <form>
+  // <input id="upfile" name="upfile" type="file" #fl
+  //   accept="image/*" (change)="onchange(fl.files)" />
+  // </form>
+  // `,
 })
 
 export class OrderDetailInputComponent implements OnInit, OnDestroy {
@@ -146,6 +155,9 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
   btnStop: boolean;
   btnDelete: boolean;
 
+  //ユーザの承認権限
+  loginInfo: LoginUserEntity;
+
   // 初期表示 パラメータ
   paramInit = new ODIS0020Form();
 
@@ -180,6 +192,10 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
   // 経理分類 設定前 値
   private beforeStr: string = '';
 
+  //URLから来た時に受け取る引数
+  queryParams: any;
+  construct: string = '';
+
   constructor(
     private appComponent: AppComponent,
     private orderService: CommonService,
@@ -201,6 +217,14 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
 
     //URLのパラメーターを消す
     history.replaceState({}, '', '#' + Const.UrlSetting.U0002);
+    this.loginInfo = this.appComponent.loginInfo;
+
+    this.actvRoute.queryParams.subscribe(params => {
+
+      this.queryParams = params;
+      this.paramInit.contractNum = this.queryParams.construct;
+    });
+
     // 各モダール 
     this.getDataFromModals();
     this.appComponent.setHeader(Const.ScreenName.S0002, Const.LinKSetting.L0000);
@@ -279,15 +303,19 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
           temp.bulkApprovalDate_lv1     = '';
           temp.bulkApprovalPerson_lv1   = '';
           temp.bulkApprovalPersonID_lv1 = '';
+          temp.bulkApprovalFlag_lv1 = false;
           temp.bulkApprovalDate_lv2     = '';
           temp.bulkApprovalPerson_lv2   = '';
           temp.bulkApprovalPersonID_lv2 = '';
+          temp.bulkApprovalFlag_lv2 = false;
           temp.bulkApprovalDate_lv3     = '';
           temp.bulkApprovalPerson_lv3   = '';
           temp.bulkApprovalPersonID_lv3 = '';
+          temp.bulkApprovalFlag_lv3 = false;
           temp.bulkApprovalDate_final   = '';
           temp.bulkApprovalPerson_final = '';
           temp.bulkApprovalPersonID_final = '';
+          temp.bulkApprovalFlag_final = false;
 
           bucketDt.push(temp);
         });
@@ -305,12 +333,24 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
    */
   private getOrderInputData() {
 
-    //承認処理画面から遷移された時のパラメータを取得する
+    //引数を受け取る
+    this.actvRoute.queryParams.subscribe(params => {
+
+      this.queryParams = params;
+      this.paramInit.contractNum = this.queryParams.construct;
+    });
+        
+    if(this.paramInit.contractNum != ''){
+
+    //引数がなければ承認処理画面から遷移された時のパラメータを取得する
     this.actvRoute.queryParams.subscribe(params =>{
     
       this.paramInit.propertyNo = params.prop;    //物件管理番号
       this.paramInit.contractNum = params.cntrt;  //契約番号      
     });
+
+
+  }
 
     this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_Init, this.paramInit)
         .then(
@@ -424,15 +464,19 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
     dt.bulkApprovalDate_lv1     = '';
     dt.bulkApprovalPerson_lv1   = '';
     dt.bulkApprovalPersonID_lv1 = '';
+    dt.bulkApprovalFlag_lv1 = false;
     dt.bulkApprovalDate_lv2     = '';
     dt.bulkApprovalPerson_lv2   = '';
     dt.bulkApprovalPersonID_lv2 = '';
+    dt.bulkApprovalFlag_lv2 = false;
     dt.bulkApprovalDate_lv3     = '';
     dt.bulkApprovalPerson_lv3   = '';
     dt.bulkApprovalPersonID_lv3 = '';
+    dt.bulkApprovalFlag_lv3 = false;
     dt.bulkApprovalDate_final   = '';
     dt.bulkApprovalPerson_final = '';
     dt.bulkApprovalPersonID_final = '';
+    dt.bulkApprovalFlag_final = false;
     initData.push(dt);
 
     // 荷造・保管料
@@ -455,15 +499,19 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
     dt.bulkApprovalDate_lv1     = '';
     dt.bulkApprovalPerson_lv1   = '';
     dt.bulkApprovalPersonID_lv1 = '';
+    dt.bulkApprovalFlag_lv1 = false;
     dt.bulkApprovalDate_lv2     = '';
     dt.bulkApprovalPerson_lv2   = '';
     dt.bulkApprovalPersonID_lv2 = '';
+    dt.bulkApprovalFlag_lv2 = false;
     dt.bulkApprovalDate_lv3     = '';
     dt.bulkApprovalPerson_lv3   = '';
     dt.bulkApprovalPersonID_lv3 = '';
+    dt.bulkApprovalFlag_lv3 = false;
     dt.bulkApprovalDate_final   = '';
     dt.bulkApprovalPerson_final = '';
     dt.bulkApprovalPersonID_final = '';
+    dt.bulkApprovalFlag_final = false;
     initData.push(dt);
 
     // 運賃
@@ -486,15 +534,19 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
     dt.bulkApprovalDate_lv1     = '';
     dt.bulkApprovalPerson_lv1   = '';
     dt.bulkApprovalPersonID_lv1 = '';
+    dt.bulkApprovalFlag_lv1 = false;
     dt.bulkApprovalDate_lv2     = '';
     dt.bulkApprovalPerson_lv2   = '';
     dt.bulkApprovalPersonID_lv2 = '';
+    dt.bulkApprovalFlag_lv2 = false;
     dt.bulkApprovalDate_lv3     = '';
     dt.bulkApprovalPerson_lv3   = '';
     dt.bulkApprovalPersonID_lv3 = '';
+    dt.bulkApprovalFlag_lv3 = false;
     dt.bulkApprovalDate_final   = '';
     dt.bulkApprovalPerson_final = '';
     dt.bulkApprovalPersonID_final = '';
+    dt.bulkApprovalFlag_final = false;
     initData.push(dt);
 
     // 労災
@@ -517,15 +569,19 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
     dt.bulkApprovalDate_lv1     = '';
     dt.bulkApprovalPerson_lv1   = '';
     dt.bulkApprovalPersonID_lv1 = '';
+    dt.bulkApprovalFlag_lv1 = false;
     dt.bulkApprovalDate_lv2     = '';
     dt.bulkApprovalPerson_lv2   = '';
     dt.bulkApprovalPersonID_lv2 = '';
+    dt.bulkApprovalFlag_lv2 = false;
     dt.bulkApprovalDate_lv3     = '';
     dt.bulkApprovalPerson_lv3   = '';
     dt.bulkApprovalPersonID_lv3 = '';
+    dt.bulkApprovalFlag_lv3 = false;
     dt.bulkApprovalDate_final   = '';
     dt.bulkApprovalPerson_final = '';
     dt.bulkApprovalPersonID_final = '';
+    dt.bulkApprovalFlag_final = false;
     initData.push(dt);
 
     return initData;
@@ -571,6 +627,7 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
     this.orderCustomerInfo = savedData.customerInfo;
     this.order0DateInfo    = savedData.dateInfo;
     this.tblMainOrder      = savedData.mainOrderInfo;
+    this.orderDetaiSplitlList = savedData.orderDetailList;
     this.tblInsertedOrder  = savedData.insertedOrderInfo;
     this.tblSekkei = savedData.sekkeiData;
     this.tblHouse  = savedData.hontaiData;
@@ -604,6 +661,7 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
 
       // タブ設定
       this.selectedTab = this.getTabName(returnDt[0].detailKind);
+      this.paramUpd.selectedTab = this.selectedTab;
       switch (returnDt[0].detailKind) {
         case Const.JuuChuuEdaban.Sekkei:
           this.tblSekkei = this.mergeData(savedData.sekkeiData, returnDt);
@@ -737,15 +795,19 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
     temp.bulkApprovalDate_lv1     = this.baseCompnt.setValue(data.bulkApprovalDate_lv1);
     temp.bulkApprovalPerson_lv1   = this.baseCompnt.setValue(data.bulkApprovalPerson_lv1);
     temp.bulkApprovalPersonID_lv1 = this.baseCompnt.setValue(data.bulkApprovalPersonID_lv1);
+    temp.bulkApprovalFlag_lv1     = this.baseCompnt.setValue(data.bulkApprovalFlag_lv1);
     temp.bulkApprovalDate_lv2     = this.baseCompnt.setValue(data.bulkApprovalDate_lv2);
     temp.bulkApprovalPerson_lv2   = this.baseCompnt.setValue(data.bulkApprovalPerson_lv2);
     temp.bulkApprovalPersonID_lv2 = this.baseCompnt.setValue(data.bulkApprovalPersonID_lv2);
+    temp.bulkApprovalFlag_lv2     = this.baseCompnt.setValue(data.bulkApprovalFlag_lv2);
     temp.bulkApprovalDate_lv3     = this.baseCompnt.setValue(data.bulkApprovalDate_lv3);
     temp.bulkApprovalPerson_lv3   = this.baseCompnt.setValue(data.bulkApprovalPerson_lv3);
     temp.bulkApprovalPersonID_lv3 = this.baseCompnt.setValue(data.bulkApprovalPersonID_lv3);
+    temp.bulkApprovalFlag_lv3     = this.baseCompnt.setValue(data.bulkApprovalFlag_lv3);
     temp.bulkApprovalDate_final   = this.baseCompnt.setValue(data.bulkApprovalDate_final);
     temp.bulkApprovalPerson_final = this.baseCompnt.setValue(data.bulkApprovalPerson_final);
     temp.bulkApprovalPersonID_final = this.baseCompnt.setValue(data.bulkApprovalPersonID_final);
+    temp.bulkApprovalFlag_final     = this.baseCompnt.setValue(data.bulkApprovalFlag_final);
     temp.orderPlanAmount        = this.baseCompnt.setValue(data.orderPlanAmount) =='' && this.IGNORE_SUPPLIER.includes(this.baseCompnt.setValue(data.orderSupplierCode))?'0':this.baseCompnt.setValue(data.orderPlanAmount);
     temp.orderSplitAmount       = this.baseCompnt.setValue(data.orderSplitAmount);
     temp.splitSupplierCode      = this.baseCompnt.setValue(data.splitSupplierCode);
@@ -774,6 +836,8 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
     temp.receivedAmount         = this.baseCompnt.setValue(data.receivedAmount);
     temp.paymentDate            = this.baseCompnt.setValue(data.paymentDate);
     temp.paymentAmount          = this.baseCompnt.setValue(data.paymentAmount);
+    temp.splitDetailKakuFlag    = this.baseCompnt.setValue(data.splitDetailKakuFlag);
+    temp.splitDetailKakuFlagDisp    = this.baseCompnt.setValue(data.splitDetailKakuFlagDisp);
 
     return temp;
   }
@@ -824,6 +888,7 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
   private setDefaultDisplay(): void {
     // 初期化
     this.Clear();
+    this.paramUpd.selectedTab = this.selectedTab;
     // ボタン制御
     // 「追加工事」タブを選択される場合、追加・変更・削除が不可
     if(this.selectedTab === Const.TabName.TabName_Tsuika){
@@ -921,15 +986,19 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
             temp.bulkApprovalDate_lv1       = '';
             temp.bulkApprovalPerson_lv1     = '';
             temp.bulkApprovalPersonID_lv1   = '';
+            temp.bulkApprovalFlag_lv1       = false;
             temp.bulkApprovalDate_lv2       = '';
             temp.bulkApprovalPerson_lv2     = '';
             temp.bulkApprovalPersonID_lv2   = '';
+            temp.bulkApprovalFlag_lv2       = false;
             temp.bulkApprovalDate_lv3       = '';
             temp.bulkApprovalPerson_lv3     = '';
             temp.bulkApprovalPersonID_lv3   = '';
+            temp.bulkApprovalFlag_lv3       = false;
             temp.bulkApprovalDate_final     = '';
             temp.bulkApprovalPerson_final   = '';
             temp.bulkApprovalPersonID_final = '';
+            temp.bulkApprovalFlag_final     = false;
             
             temp.orderDate          = this.baseCompnt.setValue(this.resSuchOAP.orderDate);
             temp.orderAmount        = this.baseCompnt.setValue(this.resSuchOAP.orderAmount);
@@ -1184,15 +1253,19 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
         dt[i].bulkApprovalDate_lv1     = this.addInput.bulkApprovalDate_lv1;
         dt[i].bulkApprovalPerson_lv1   = this.addInput.bulkApprovalPerson_lv1;
         dt[i].bulkApprovalPersonID_lv1 = this.addInput.bulkApprovalPersonID_lv1;
+        dt[i].bulkApprovalFlag_lv1     = false;
         dt[i].bulkApprovalDate_lv2     = this.addInput.bulkApprovalDate_lv2;
         dt[i].bulkApprovalPerson_lv2   = this.addInput.bulkApprovalPerson_lv2;
         dt[i].bulkApprovalPersonID_lv2 = this.addInput.bulkApprovalPersonID_lv2;
+        dt[i].bulkApprovalFlag_lv2     = false;
         dt[i].bulkApprovalDate_lv3     = this.addInput.bulkApprovalDate_lv3;
         dt[i].bulkApprovalPerson_lv3   = this.addInput.bulkApprovalPerson_lv3;
         dt[i].bulkApprovalPersonID_lv3 = this.addInput.bulkApprovalPersonID_lv3;
+        dt[i].bulkApprovalFlag_lv3     = false;
         dt[i].bulkApprovalDate_final   = this.addInput.bulkApprovalDate_final;
         dt[i].bulkApprovalPerson_final = this.addInput.bulkApprovalPerson_final;
         dt[i].bulkApprovalPersonID_final = this.addInput.bulkApprovalPersonID_final;
+        dt[i].bulkApprovalFlag_final     = false;
         dt[i].orderDate                = res.orderDate;
         dt[i].orderAmount              = res.orderAmount;
         dt[i].receivedDate             = res.receivedDate;
@@ -1401,6 +1474,8 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
 
     // タブIndex とタブ value が合わないため、タブ名称を取得
     this.selectedTab = event.tab.textLabel;
+    // 選択中のタブの情報を持たせる
+    this.paramUpd.selectedTab = this.selectedTab;
     // 初期化
     this.setDefaultDisplay();
     this.rowStatus.Clear();
@@ -1619,13 +1694,164 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
     this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_UPDATE, this.paramUpd)
         .then(
           (response) => {
+            try{
             if(response.result === Const.ConnectResult.R0001){  
+
+              let OrderDetaiSplitBean: ODIS0020OrderDetaiSplitBean[] = [];
+              OrderDetaiSplitBean = this.tblSekkei.concat(this.tblHouse,this.tblKaitai,this.tblTsuika,this.tblZouen1,this.tblZouen2);
+              
+              //セッションを取得
+              let savedData = JSON.parse(sessionStorage.getItem(Const.ScreenName.S0001EN));
+              //セッションに値を入れる
+              savedData.resultData.forEach(resultData => {
+                if(resultData.customerNum === this.orderCustomerInfo.contractNum.replace("-","")){
+                  let planOrderAmount = 0;
+                  let approvalRequestAmount = 0;
+                 
+                  //発注予定金額合計,承認依頼金額合計
+                  OrderDetaiSplitBean.forEach(orderDetaiSplitlList => {
+                    if (this.baseCompnt.setValue(orderDetaiSplitlList.orderPlanAmount) != '' && this.baseCompnt.setValue(orderDetaiSplitlList.splitNo == '1')) {
+                      planOrderAmount += Number(orderDetaiSplitlList.orderPlanAmount);
+                    }
+                    if (this.baseCompnt.setValue(orderDetaiSplitlList.orderSplitAmount) != '' ){
+                      approvalRequestAmount += Number(orderDetaiSplitlList.orderSplitAmount);
+                    }
+                  })
+                  resultData.planOrderAmount = planOrderAmount;
+                  resultData.approvalRequestAmount = approvalRequestAmount;
+                  
+                  //各承認フラグ
+                  OrderDetaiSplitBean.forEach(orderDetaiSplitlList => {
+                    if(orderDetaiSplitlList.requestDate != null){
+                      if(orderDetaiSplitlList.approvalDate_final == null && 
+                         orderDetaiSplitlList.approvalDate_lv1 == null){
+                        resultData.approval_1 = "未";
+                      }else{
+                        resultData.approval_1 = "";
+                      }
+                      if(orderDetaiSplitlList.approvalDate_final == null && 
+                         orderDetaiSplitlList.approvalDate_lv2 == null){
+                        resultData.approval_2 = "未";
+                      }else{
+                        resultData.approval_2 = "";
+                      }
+                      if(orderDetaiSplitlList.approvalDate_final == null && 
+                         orderDetaiSplitlList.approvalDate_lv3 == null){
+                        resultData.approval_3 = "未";
+                      }else{
+                        resultData.approval_3 = "";
+                      }
+                      if(orderDetaiSplitlList.approvalDate_final == null){
+                        resultData.approval_last = "未";
+                      }else{
+                        resultData.approval_last = "";
+                      }
+                    }         
+                  })
+
+                  //明細作成済
+                  let resultOrderDetai: any[] = new Array();
+                  OrderDetaiSplitBean.forEach(orderDetaiSplitlList => {
+                    if(orderDetaiSplitlList.journalCode != "0100" && 
+                       orderDetaiSplitlList.journalCode != "9100" && 
+                       orderDetaiSplitlList.journalCode != "9200" && 
+                       orderDetaiSplitlList.journalCode != "9300" ){
+                        resultOrderDetai.push(orderDetaiSplitlList)
+                    }
+                  });
+                  
+                  if(resultOrderDetai.length >= 1){
+                    resultData.createdDetail = "済"
+                  }else{
+                    resultData.createdDetail = ""
+                  }
+                }
+              });
+
+              //メール送信処理
+              let Approval_lv1 = new ODIS0020SelApproval;
+              let Approval_lv2 = new ODIS0020SelApproval;
+              let Approval_lv3 = new ODIS0020SelApproval;
+              let Approval_final = new ODIS0020SelApproval;
+
+              Approval_lv1.approval = "1"              
+              Approval_lv2.approval = "2"
+              Approval_lv3.approval = "3"
+              Approval_final.approval = "4"
+              Approval_lv1.jgyshCd = this.loginInfo.jgyshCd
+              Approval_lv2.jgyshCd = this.loginInfo.jgyshCd
+              Approval_lv3.jgyshCd = this.loginInfo.jgyshCd
+              Approval_final.jgyshCd = this.loginInfo.jgyshCd
+              Approval_lv1.orderDetailList = new Array;           
+              Approval_lv2.orderDetailList = new Array;
+              Approval_lv3.orderDetailList = new Array;
+              Approval_final.orderDetailList = new Array;      
+
+              OrderDetaiSplitBean.forEach(element => {
+                if(element.bulkApprovalFlag_lv1){
+                  Approval_lv1.orderDetailList.push(element)
+                }
+                if(element.bulkApprovalFlag_lv2){
+                  Approval_lv2.orderDetailList.push(element)
+                }
+                if(element.bulkApprovalFlag_lv3){
+                  Approval_lv3.orderDetailList.push(element)
+                }
+                if(element.bulkApprovalFlag_final){
+                  Approval_final.orderDetailList.push(element)
+                }
+              });
+              
+              this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, Approval_lv1)
+              .then(
+                (response) => {
+                  if(response.result === Const.ConnectResult.R0001){ 
+                  }
+                }
+              );
+
+              this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, Approval_lv2)
+              .then(
+                (response) => {
+                  if(response.result === Const.ConnectResult.R0001){ 
+                  }
+                }
+              );
+
+              this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, Approval_lv3)
+              .then(
+                (response) => {
+                  if(response.result === Const.ConnectResult.R0001){ 
+                  }
+                }
+              );
+
+              this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, Approval_final)
+              .then(
+                (response) => {
+                  if(response.result === Const.ConnectResult.R0001){ 
+                  }
+                }
+              );
+
+              //セッションを戻す
+              sessionStorage.setItem(Const.ScreenName.S0001EN,JSON.stringify(savedData));
+
+
               //セッションを削除する
               sessionStorage.removeItem(Const.ScreenName.S0002EN);
 
               // 承認処理画面に戻る
               this.router.navigate([Const.UrlSetting.U0001]);
             }
+          }
+          catch(error){
+            //エラーが発生した場合、エラーメッセージを表示する。
+            alert(Const.ErrorMsg.E0020);
+          }
+          finally{
+            this.isLoading = false;
+          }
           }
         )
         .finally(
@@ -1700,6 +1926,7 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
     saveDt.paramInit         = this.paramInit;
     saveDt.approvalPermission = this.approvalPermission;
 
+
     // 既にセッションが格納されている場合は除去する
     if (sessionStorage.getItem(Const.ScreenName.S0002EN) != null) {
       sessionStorage.removeItem(Const.ScreenName.S0002EN);
@@ -1727,7 +1954,7 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
   public updateDownloadOrderDetailExportFile($event){	  
   
     //登録警告を表示する。
-    const confirm = window.confirm(Const.WarningMsg.W0005);
+    const confirm = window.confirm(Const.WarningMsg.W0007);
     if(!confirm){
       return;    
     }
@@ -1810,7 +2037,7 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
    public updateDownloadOrderGrossDetailExportFile($event){	  
   
     //登録警告を表示する。
-    const confirm = window.confirm(Const.WarningMsg.W0005);
+    const confirm = window.confirm(Const.WarningMsg.W0007);
     if(!confirm){
       return;    
     }
@@ -2164,24 +2391,24 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
 
     this.isLoading = true;
 
-    this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_UPDATE, this.paramUpd)
-    .then(
-      (response) => {
+    // this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_UPDATE, this.paramUpd)
+    // .then(
+    //   (response) => {
         var param = { prop: this.paramInit.propertyNo,  // 物件管理Ｎｏ
           cntr: this.paramInit.contractNum} // 契約番号
         //画面遷移
         this.router.navigate([Const.UrlSetting.U0008],{ queryParams: param,skipLocationChange: false, replaceUrl: false});
-      }
-    )
-    .finally(
-      ()=>{
-        //ロード画面を解除する。
-        this.isLoading = false;
-      }
-    )
+      // }
+    // )
+    // .finally(
+      // ()=>{
+        // ロード画面を解除する。
+        // this.isLoading = false;
+      // }
+    // )
 
 
-  }
+   }
 
   public changeOrderReceiptStt($event){
     var isChecked = $event.currentTarget.checked;
@@ -2201,4 +2428,6 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
 
   //#endregion
 }
+
+
 

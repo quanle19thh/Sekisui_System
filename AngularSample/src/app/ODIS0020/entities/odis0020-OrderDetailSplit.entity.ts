@@ -71,6 +71,9 @@ export class ODIS0020OrderDetaiSplitBean{
   /** 発注承認１者ID */
   bulkApprovalPersonID_lv1: string = '';
 
+  /** 発注承認１者メール送信フラグ */
+  bulkApprovalFlag_lv1: boolean = false;
+
   /** 発注承認２日 */
   bulkApprovalDate_lv2: string = '';
 
@@ -79,6 +82,9 @@ export class ODIS0020OrderDetaiSplitBean{
 
   /** 発注承認２者ID */
   bulkApprovalPersonID_lv2: string = '';
+
+  /** 発注承認２者メール送信フラグ */
+  bulkApprovalFlag_lv2: boolean = false;
 
   /** 発注承認３日 */
   bulkApprovalDate_lv3: string = '';
@@ -89,6 +95,9 @@ export class ODIS0020OrderDetaiSplitBean{
   /** 発注承認３者ID */
   bulkApprovalPersonID_lv3: string = '';
 
+  /** 発注承認３者メール送信フラグ */
+  bulkApprovalFlag_lv3: boolean = false;
+
   /** 発注最終承認日 */
   bulkApprovalDate_final: string = '';
 
@@ -97,6 +106,9 @@ export class ODIS0020OrderDetaiSplitBean{
 
   /** 発注最終承認者ID */
   bulkApprovalPersonID_final: string = '';
+
+  /** 発注最終承認者メール送信フラグ */
+  bulkApprovalFlag_final: boolean = false;
 
   /** コメント */
   comment: string = '';
@@ -166,6 +178,12 @@ export class ODIS0020OrderDetaiSplitBean{
 
   /** 支払金額 */
   paymentAmount: string = '';
+
+  /** 分割明細確定区分 */
+  splitDetailKakuFlag: string = '';
+
+  /** 分割明細確定区分表示 */
+  splitDetailKakuFlagDisp: string = '';
 
   /** 工事物件名カナ */
   constructionKata: string;

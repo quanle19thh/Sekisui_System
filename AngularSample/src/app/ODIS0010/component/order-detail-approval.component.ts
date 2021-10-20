@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewEncapsulation,} from "@angular/core";
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AppComponent } from "../../app.component";
 import { ODIS0010Form } from "../entities/odis0010-Form.entity";
 import { ODIS0010OrderDetail } from "../entities/odis0010.entity";
@@ -37,11 +37,16 @@ export class OrderDetailApprovalComponent implements OnInit {
   //表示する承認の数の設定
   approvalUnit: number;
 
+  //URLから来た時に受け取る引数
+  queryParams: any;
+  construct: string = '';
+
   constructor(
     private appComponent: AppComponent,
     private orderService: CommonService,
     private router: Router,
     private CommonComponent: CommonComponent,
+    private activatedRoute: ActivatedRoute,
   ) {}
 
   ngOnInit() {
@@ -55,20 +60,49 @@ export class OrderDetailApprovalComponent implements OnInit {
     
     // 初期画面をレンダーする
     this.isInitFlg = true;
+
+    //引数を受け取る
+    this.activatedRoute.queryParams.subscribe(
+      params => {
+        this.queryParams = params;
+        this.construct = this.queryParams.construct;
+      }
+    );
     
+    // 前回の接続情報があれば受け取る（ほかの画面から戻ってきた時）
     if(sessionStorage.getItem(Const.ScreenName.S0001EN) != null){
 
       let savedData = JSON.parse(sessionStorage.getItem(Const.ScreenName.S0001EN));
 
       //ページャネタの初期表示ページ数を設定する
       this.currPageIndex = savedData.currentPage;
-      
+
       //入力したデータを設定する。
       this.inputment = savedData.inputForm;
 
       //一覧のソート状態
       this.orderDetailData = savedData.resultData;
 
+    }else if(this.construct != null){
+      //URLに引数があった場合は引数で検索して結果を表示
+      this.inputment.contractNumFrom = this.construct;
+      this.inputment.contractNumTo = this.construct;
+      // 発注明細入力_承認処理取得
+      this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0001_Search, this.inputment)
+      .then(
+         (response) => {
+          if (response.result === Const.ConnectResult.R0001) {
+             this.orderDetailData = response.applicationData;
+          } else {
+             //返却データがない場合、データテーブルを初期化にする。
+             this.orderDetailData = [];
+          }
+          this.currPageIndex = 0;
+          this.saveTemporaryData();
+          //ロード中を解除する。
+          this.isGetting = false;
+         }
+      );
     }
   }
 

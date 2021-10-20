@@ -15,6 +15,7 @@ import { MatTable } from '@angular/material';
 import { ODIS0020Service } from 'app/ODIS0020/services/odis0020-service';
 import { CommonService } from "app/common/common.service";
 import { ODIS0020CustomerInfoBean } from '../../entities/odis0020-OrderInformation.entity'
+import { HttpClient } from '@angular/common/http';
 
 
 @Component({
@@ -52,6 +53,10 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
   //ユーザの承認権限
   loginInfo: LoginUserEntity;
 
+  //明細確定
+  //meisaiKakutei: String;
+  meisaiKakutei: boolean = true;
+
   /**
    * テーブルヘッダーのカラムを定義する。
    */
@@ -74,7 +79,10 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
     "comment1",             // コメント
     "irai",                 // 依頼
     "shounin_saishuu",      // 最終承認
+    "bunKaku",              // 分割確定
     "bunKyaku",             // 分割却下
+    "upload",               // ファイルアップロード
+    "download",             // ファイルアダウンロード
     "hacChu",               // 発注
     "ukeIre",               // 受入
     "shiHarai",             // 支払
@@ -112,7 +120,10 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
     "comment",                // コメント
     "requestDate",            // 依頼日
     "approvalDate_final",     // 最終承認日
+    "spritKakutei",           // 明細確定
     "splitReject",            // 分割却下
+    "upfile",                 // ファイルアップロード
+    "downfile",               // ファイルダウンロード
     "orderSupplierDate",      // 発注日
     "orderSupplierAmount",    // 発注金額
     "receivedDate",           // 受入日
@@ -129,6 +140,7 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
     private appComponent: AppComponent,
     private odis0020Service: ODIS0020Service,
     private orderService: CommonService,
+    private http: HttpClient,
   ) {  }
 
   ngOnInit(): void {
@@ -567,7 +579,7 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
         newSplit.receivedAmount       = this.comCompnt.setValue(dt.receivedAmount);
         newSplit.paymentDate          = this.comCompnt.setValue(dt.paymentDate);
         newSplit.paymentAmount        = this.comCompnt.setValue(dt.paymentAmount);
-        
+
         splitDt.push(newSplit);
       }
     });
@@ -576,6 +588,8 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
     this.odis0060Service.setSplitTable(shiwakeDt);
     //　テーブル一覧：右側 分割データ
     this.odis0060Service.setDetailTable(splitDt);
+
+    this.odis0060Service.meisaiKakutei = data.splitDetailKakuFlag;
 
     //　エミッターを送る。
     this.dataEmitter.action = Const.Action.A0007;
@@ -589,6 +603,19 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
    */
   public onSelectHighLight(event: any, value: ODIS0020OrderDetaiSplitBean) {
 
+    if((value.orderBranchNo == null && 
+        (value.journalCode == '0100' ||
+         value.journalCode == '9100' || 
+         value.journalCode == '9200' ||
+         value.journalCode == '9300' )) || 
+       (value.orderBranchNo == '30' && 
+        (value.journalCode == '0100' ||
+         value.journalCode == '9100' || 
+         value.journalCode == '9200' )) )
+         {
+           alert('入力出来ません。');           
+           return;
+    }
     this.setSelect(event);
     
     const nodeName = event.target.nodeName;
@@ -710,21 +737,23 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
     dt.requester = this.loginInfo.empNmKnj;
     dt.requesterID = this.loginInfo.personAuthID;
 
-    let SelApproval = new ODIS0020SelApproval();
+    dt.bulkApprovalFlag_lv1 = true;
+
+  //   let SelApproval = new ODIS0020SelApproval();
   
-    SelApproval.jgyshCd = this.loginInfo.jgyshCd
-    SelApproval.approval = "1";
+  //   SelApproval.jgyshCd = this.loginInfo.jgyshCd
+  //   SelApproval.approval = "1";
 
-    SelApproval.orderDetailList = new Array;
-    SelApproval.orderDetailList.push(dt);
+  //   SelApproval.orderDetailList = new Array;
+  //   SelApproval.orderDetailList.push(dt);
 
-   this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
-     .then(
-       (response) => {
-         if(response.result === Const.ConnectResult.R0001){ 
-         }
-       }
-     );
+  //  this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
+  //    .then(
+  //      (response) => {
+  //        if(response.result === Const.ConnectResult.R0001){ 
+  //        }
+  //      }
+  //    );
   }
 
   /**
@@ -740,21 +769,22 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
     dt.approvalPerson_lv1 = this.loginInfo.empNmKnj;
     dt.approvalPersonID_lv1 = this.loginInfo.personAuthID;
 
-    let SelApproval = new ODIS0020SelApproval();
+    dt.bulkApprovalFlag_lv2 = true;
+  //   let SelApproval = new ODIS0020SelApproval();
   
-    SelApproval.jgyshCd = this.loginInfo.jgyshCd
-    SelApproval.approval = "2";
+  //   SelApproval.jgyshCd = this.loginInfo.jgyshCd
+  //   SelApproval.approval = "2";
 
-    SelApproval.orderDetailList = new Array;
-    SelApproval.orderDetailList.push(dt);
+  //   SelApproval.orderDetailList = new Array;
+  //   SelApproval.orderDetailList.push(dt);
 
-   this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
-     .then(
-       (response) => {
-         if(response.result === Const.ConnectResult.R0001){ 
-         }
-       }
-     );
+  //  this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
+  //    .then(
+  //      (response) => {
+  //        if(response.result === Const.ConnectResult.R0001){ 
+  //        }
+  //      }
+  //    );
 
   }
 
@@ -771,21 +801,22 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
     dt.approvalPerson_lv2 = this.loginInfo.empNmKnj;
     dt.approvalPersonID_lv2 = this.loginInfo.personAuthID;
 
-    let SelApproval = new ODIS0020SelApproval();
+    dt.bulkApprovalFlag_lv3 = true;
+  //   let SelApproval = new ODIS0020SelApproval();
   
-    SelApproval.jgyshCd = this.loginInfo.jgyshCd
-    SelApproval.approval = "3";
+  //   SelApproval.jgyshCd = this.loginInfo.jgyshCd
+  //   SelApproval.approval = "3";
 
-    SelApproval.orderDetailList = new Array;
-    SelApproval.orderDetailList.push(dt);
+  //   SelApproval.orderDetailList = new Array;
+  //   SelApproval.orderDetailList.push(dt);
 
-   this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
-     .then(
-       (response) => {
-         if(response.result === Const.ConnectResult.R0001){ 
-         }
-       }
-     );
+  //  this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
+  //    .then(
+  //      (response) => {
+  //        if(response.result === Const.ConnectResult.R0001){ 
+  //        }
+  //      }
+  //    );
   }
 
   /**
@@ -803,19 +834,20 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
 
     let SelApproval = new ODIS0020SelApproval();
   
-    SelApproval.jgyshCd = this.loginInfo.jgyshCd
-    SelApproval.approval = "4";
+    dt.bulkApprovalFlag_final = true;
+  //   SelApproval.jgyshCd = this.loginInfo.jgyshCd
+  //   SelApproval.approval = "4";
 
-    SelApproval.orderDetailList = new Array;
-    SelApproval.orderDetailList.push(dt);
+  //   SelApproval.orderDetailList = new Array;
+  //   SelApproval.orderDetailList.push(dt);
 
-   this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
-     .then(
-       (response) => {
-         if(response.result === Const.ConnectResult.R0001){ 
-         }
-       }
-     );
+  //  this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
+  //    .then(
+  //      (response) => {
+  //        if(response.result === Const.ConnectResult.R0001){ 
+  //        }
+  //      }
+  //    );
   }
 
   /**
@@ -1158,19 +1190,20 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
         element.bulkRequesterID = this.loginInfo.personAuthID;
   
         SelApproval.jgyshCd = this.loginInfo.jgyshCd
-        SelApproval.approval = "1";
+        element.bulkApprovalFlag_lv1 = true;
+        // SelApproval.approval = "1";
     
         SelApproval.orderDetailList.push(element);
       }
     })
 
-   this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
-     .then(
-       (response) => {
-         if(response.result === Const.ConnectResult.R0001){ 
-         }
-       }
-     );
+  //  this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
+  //    .then(
+  //      (response) => {
+  //        if(response.result === Const.ConnectResult.R0001){ 
+  //        }
+  //      }
+  //    );
   }
 
   /**
@@ -1194,19 +1227,20 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
           element.bulkApprovalPersonID_lv1 = this.loginInfo.personAuthID;
   
           SelApproval.jgyshCd = this.loginInfo.jgyshCd
-          SelApproval.approval = "2";
+          element.bulkApprovalFlag_lv2 = true;
+          // SelApproval.approval = "2";
       
           SelApproval.orderDetailList.push(element);
         }
       })
 
-      this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
-      .then(
-        (response) => {
-          if(response.result === Const.ConnectResult.R0001){ 
-          }
-        }
-      );
+      // this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
+      // .then(
+      //   (response) => {
+      //     if(response.result === Const.ConnectResult.R0001){ 
+      //     }
+      //   }
+      // );
   }
   /**
    * 一括最承認２
@@ -1229,18 +1263,19 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
           element.bulkApprovalPersonID_lv2 = this.loginInfo.personAuthID;
   
           SelApproval.jgyshCd = this.loginInfo.jgyshCd
-          SelApproval.approval = "3";
+          element.bulkApprovalFlag_lv3 = true;
+          // SelApproval.approval = "3";
       
           SelApproval.orderDetailList.push(element);
         }
       })
-      this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
-      .then(
-        (response) => {
-          if(response.result === Const.ConnectResult.R0001){ 
-          }
-        }
-      );
+      // this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
+      // .then(
+      //   (response) => {
+      //     if(response.result === Const.ConnectResult.R0001){ 
+      //     }
+      //   }
+      // );
   }
 
   /**
@@ -1264,18 +1299,19 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
           element.bulkApprovalPersonID_lv3 = this.loginInfo.personAuthID;
   
           SelApproval.jgyshCd = this.loginInfo.jgyshCd
-          SelApproval.approval = "4";
+          element.bulkApprovalFlag_final = true;
+          // SelApproval.approval = "4";
       
           SelApproval.orderDetailList.push(element);
         }
       })
-      this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
-      .then(
-        (response) => {
-          if(response.result === Const.ConnectResult.R0001){ 
-          }
-        }
-      );
+      // this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, SelApproval)
+      // .then(
+      //   (response) => {
+      //     if(response.result === Const.ConnectResult.R0001){ 
+      //     }
+      //   }
+      // );
   }
 
   /**
@@ -1320,15 +1356,19 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
             element.bulkApprovalDate_lv1     = '';
             element.bulkApprovalPerson_lv1   = '';
             element.bulkApprovalPersonID_lv1 = '';
+            element.bulkApprovalFlag_lv1     = false;
             element.bulkApprovalDate_lv2     = '';
             element.bulkApprovalPerson_lv2   = '';
             element.bulkApprovalPersonID_lv2 = '';
+            element.bulkApprovalFlag_lv2     = false;
             element.bulkApprovalDate_lv3     = '';
             element.bulkApprovalPerson_lv3   = '';
             element.bulkApprovalPersonID_lv3 = '';
+            element.bulkApprovalFlag_lv3     = false;
             element.bulkApprovalDate_final   = '';
             element.bulkApprovalPerson_final = '';
             element.bulkApprovalPersonID_final = '';
+            element.bulkApprovalFlag_final   = false;
           }          
         });
 
@@ -1342,15 +1382,19 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
         dt.approvalDate_lv1     = '';
         dt.approvalPerson_lv1   = '';
         dt.approvalPersonID_lv1 = '';
+        dt.bulkApprovalFlag_lv1 = false;
         dt.approvalDate_lv2     = '';
         dt.approvalPerson_lv2   = '';
         dt.approvalPersonID_lv2 = '';
+        dt.bulkApprovalFlag_lv2 = false;
         dt.approvalDate_lv3     = '';
         dt.approvalPerson_lv3   = '';
         dt.approvalPersonID_lv3 = '';
+        dt.bulkApprovalFlag_lv3 = false;
         dt.approvalDate_final   = '';
         dt.approvalPerson_final = '';
         dt.approvalPersonID_final = '';
+        dt.bulkApprovalFlag_final = false;
 
         break;
     }
@@ -1420,5 +1464,24 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
     // 最後にエミッタ―データを送る。
     this.sendEmitter(dt);
 
+  }
+
+  //ファイルのアップロード
+  onchange(list: any) {
+    // ファイルが指定されていなければ
+    if (list.length <= 0) { return; }
+
+    // ［3］ファイルを取得
+    let f = list[0];
+    // ［4］ファイルをセット
+    let data = new FormData();
+    data.append('upfile', f, f.name);
+
+    // ［5］サーバーに送信
+    this.http.post('app/upload.php', data)
+      .subscribe(
+        data => console.log(data),
+        error => console.log(error)
+      );
   }
 }

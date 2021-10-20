@@ -15,6 +15,9 @@ export class ODIS0020UpdForm{
     /** 粗利率出力フラグ */
     orderGrossFlg: string;
 
+    /** 選択タブ*/
+    selectedTab: string;
+
 	/** 発注明細データ */
     orderDetailList: ODIS0020OrderDetaiSplitBean[];
 }
