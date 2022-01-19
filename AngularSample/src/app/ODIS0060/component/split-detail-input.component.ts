@@ -825,7 +825,7 @@ export class SplitOrderDetailComponent implements OnInit, OnDestroy {
       dt.journalName          = this.shiwakeData[0].journalName;
       dt.orderSupplierCode    = this.shiwakeData[0].orderSupplierCode;
       dt.orderSupplierName    = this.shiwakeData[0].orderSupplierName;
-      dt.orderReceipt         = this.orderReceiptCheckStt;
+      dt.orderReceipt         = this.shiwakeData[0].orderReceipt;
       dt.orderPlanAmount      = this.shiwakeData[0].orderPlanAmount;
       dt.bulkRequestDate      = this.shiwakeData[0].bulkRequestDate;
       dt.bulkRequester        = this.shiwakeData[0].bulkRequester;

@@ -436,12 +436,12 @@
         <ng-container matColumnDef="upfile">
             <th style="min-width: 30px; width: 30px; " mat-header-cell *matHeaderCellDef></th>
             <td style="min-width: 30px; width: 30px; " class="font-s" mat-cell *matCellDef="let element "
-            [ngStyle]="{'backgroundColor': this.tabName == this.readonlyTab? this.grayOut :'white'}">
-            <div class="originalFileBtn">
-                ＵＰ
-                <input type="file" name="upfile" type="file" #fl
-                accept=".xlsx" (change)="onchange(fl.files)" />
-            </div>
+            [ngStyle]="{'backgroundColor': this.tabName == this.readonlyTab? this.grayOut :'white'}">                  
+            <div class="originalFileBtn"> 
+                ＵＰ                          
+                    <!-- <input id="upfile" name="upfile"  type="file" #fl accept=".xlsx" (change)="upload_file(fl.files)" /> -->
+                    <input class="form-control" type="file"	(change)="onChange($event)">                
+            </div>                        
             </td>
             <td mat-footer-cell *matFooterCellDef></td>
         </ng-container>
@@ -452,8 +452,7 @@
             [ngStyle]="{'backgroundColor': this.tabName == this.readonlyTab? this.grayOut :'white'}">
             <div class="originalFileBtn">
                 ＤＬ
-                <button mat-button id="btnMeisaiIchiran" class="btnDownload" *ngIf="true" tabindex="20"
-                (click)="approvalReject($event,element,'order')">ＤＬ</button>
+                <button mat-button class="btnDownload" *ngIf="true" tabindex="20" (click)="download_file(element)">ＤＬ</button>
             </div>
             </td>
             <td mat-footer-cell *matFooterCellDef></td>

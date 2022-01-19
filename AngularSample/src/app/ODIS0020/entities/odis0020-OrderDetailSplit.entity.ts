@@ -197,4 +197,7 @@ export class ODIS0020OrderDetaiSplitBean{
   /** 契約者名漢字 */
   contractorName: string;
 
+  /** 未処理フラグ */
+  unprocessFlag: boolean;
+
 }  

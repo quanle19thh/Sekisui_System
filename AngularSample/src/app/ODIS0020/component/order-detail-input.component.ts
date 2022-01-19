@@ -85,6 +85,43 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
     }
   }
 
+    //　選択されたタブのIndexを取得
+    get tabEadabanValue(){
+      switch(this.selectedTab){
+        case this.tabName1:
+          return "";
+        case this.tabName2:
+          return "00";
+        case this.tabName3:
+          return "30";
+        case this.tabName4:
+          return "31";
+        case this.tabName5:
+          return "32";
+        case this.tabName6:
+          return "36";
+      }
+    }
+
+        //　入力されたタブのIndexを取得
+        selEadabanValue(no: String){
+          switch(no){
+            case Const.JuuChuuEdaban.Sekkei:
+              return "";
+            case Const.JuuChuuEdaban.Hontai:
+              return "00";
+            case Const.JuuChuuEdaban.Kaitai:
+              return "30";
+            case Const.JuuChuuEdaban.Zouen1:
+              return "31";
+            case Const.JuuChuuEdaban.Zouen2:
+              return "32";
+            case Const.JuuChuuEdaban.Tsuika:
+              return "36";
+          }
+        }
+
+
   get tabOrderKind(){
     switch(this.selectedTab){
       case this.tabName1:
@@ -134,7 +171,7 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
 
   // 明細テーブルにデータを渡す引数 (連動タブを使ったら削除予定)
   tblSekkei : ODIS0020OrderDetaiSplitBean[] = [];
-  tblHouse : ODIS0020OrderDetaiSplitBean[] = [];
+  tblHouse  : ODIS0020OrderDetaiSplitBean[] = [];
   tblKaitai : ODIS0020OrderDetaiSplitBean[] = [];
   tblTsuika : ODIS0020OrderDetaiSplitBean[] = [];
   tblZouen1 : ODIS0020OrderDetaiSplitBean[] = [];
@@ -196,6 +233,9 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
   queryParams: any;
   construct: string = '';
 
+  //未処理フラグ
+  unprocessFlg: boolean = false;
+
   constructor(
     private appComponent: AppComponent,
     private orderService: CommonService,
@@ -233,7 +273,6 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
     if(sessionStorage.getItem(Const.ScreenName.S0002EN)){
       // セッション情報 設定
       this.getOrderInputDataFromSession();
-
     }
     else{
       // 初期設定
@@ -316,6 +355,7 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
           temp.bulkApprovalPerson_final = '';
           temp.bulkApprovalPersonID_final = '';
           temp.bulkApprovalFlag_final = false;
+          temp.unprocessFlag = false;
 
           bucketDt.push(temp);
         });
@@ -409,6 +449,16 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
     // データ フィルタ
     var dt = listOrderDetail.filter(val =>{
       if(this.baseCompnt.setValue(val.detailKind) == edaBan){
+        //未処理フラグの入力
+        this.tblMainOrder.forEach(resultData => {  
+          if(resultData.branchNum1 == this.selEadabanValue(edaBan)){
+            if(resultData.unprocessNumber != "0"){
+              val.unprocessFlag = true;
+            }else{
+              val.unprocessFlag = false;
+            }
+          }
+      })
         return val;
       }
     });
@@ -838,6 +888,7 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
     temp.paymentAmount          = this.baseCompnt.setValue(data.paymentAmount);
     temp.splitDetailKakuFlag    = this.baseCompnt.setValue(data.splitDetailKakuFlag);
     temp.splitDetailKakuFlagDisp    = this.baseCompnt.setValue(data.splitDetailKakuFlagDisp);
+    temp.unprocessFlag    = this.baseCompnt.setValue(data.unprocessFlag);
 
     return temp;
   }
@@ -891,13 +942,16 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
     this.paramUpd.selectedTab = this.selectedTab;
     // ボタン制御
     // 「追加工事」タブを選択される場合、追加・変更・削除が不可
-    if(this.selectedTab === Const.TabName.TabName_Tsuika){
+    if(this.unprocessFlg){
       this.setPageButtonDisplay(true, true, false, true);
+    }else{
+      if(this.selectedTab === Const.TabName.TabName_Tsuika){
+        this.setPageButtonDisplay(true, true, false, true);
+      }
+      else{
+        this.setPageButtonDisplay(false, true, false, true);
+      }
     }
-    else{
-      this.setPageButtonDisplay(false, true, false, true);
-    }
-    
   }
 
   /**
@@ -1006,6 +1060,8 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
             temp.receivedAmount     = this.baseCompnt.setValue(this.resSuchOAP.receivedAmount);
             temp.paymentDate        = this.baseCompnt.setValue(this.resSuchOAP.paymentDate);
             temp.paymentAmount      = this.baseCompnt.setValue(this.resSuchOAP.paymentAmount);
+
+            temp.unprocessFlag      = false;
 
             this.insertToDataTable(temp);
 
@@ -1272,6 +1328,7 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
         dt[i].receivedAmount           = res.receivedAmount;
         dt[i].paymentDate              = res.paymentDate;
         dt[i].paymentAmount            = res.paymentAmount;
+        dt[i].unprocessFlag            = res.unprocessFlag;
       }
     }
 
@@ -1476,6 +1533,21 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
     this.selectedTab = event.tab.textLabel;
     // 選択中のタブの情報を持たせる
     this.paramUpd.selectedTab = this.selectedTab;
+    //未処理フラグ
+    if(this.tabEadabanValue != "" && this.tabEadabanValue != "36"){
+      this.tblMainOrder.forEach(resultData => {  
+          if(resultData.branchNum1 == this.tabEadabanValue){
+            if(resultData.unprocessNumber != "0"){
+              this.unprocessFlg = true;
+            }else{
+              this.unprocessFlg = false;
+            }
+          }
+      })
+    }else{
+      this.unprocessFlg = false;
+    }
+
     // 初期化
     this.setDefaultDisplay();
     this.rowStatus.Clear();
@@ -1534,15 +1606,19 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
 
     this.setPageButtonDisplay(true, true, false, true);
 
-    if (dt != null) {
-      if (this.baseCompnt.setValue(dt.bulkApprovalDate_final) != ''){
-        this.setPageButtonDisplay(true, true, false, true);
-      }
-      else {
-        this.setPageButtonDisplay(true, false, false, false);
+    if(this.unprocessFlg){
+      this.setPageButtonDisplay(true, true, false, true);
+    }else{
+      if (dt != null) {
+        if (this.baseCompnt.setValue(dt.bulkApprovalDate_final) != ''){
+          this.setPageButtonDisplay(true, true, false, true);
+        }
+        else {
+          this.setPageButtonDisplay(true, false, false, false);
 
-        if (this.FIXED_ROW.includes(dt.journalCode)) {
-          this.setPageButtonDisplay(true, false, false, true);
+          if (this.FIXED_ROW.includes(dt.journalCode)) {
+            this.setPageButtonDisplay(true, false, false, true);
+          }
         }
       }
     }
@@ -1860,6 +1936,19 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
             this.isLoading = false;
           }
         )
+  }
+
+  //メール送信
+  private sendMail(selApproval: ODIS0020SelApproval){
+
+
+    this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_sendmail, selApproval)
+    .then(
+      (response) => {
+        if(response.result === Const.ConnectResult.R0001){ 
+        }
+      }
+    );
   }
 
   /**
@@ -2406,8 +2495,6 @@ export class OrderDetailInputComponent implements OnInit, OnDestroy {
         // this.isLoading = false;
       // }
     // )
-
-
    }
 
   public changeOrderReceiptStt($event){

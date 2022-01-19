@@ -30,4 +30,6 @@ export interface ODIS0020MainOrderEdaBan{
     /**   売上年月日 */
     salesUpdateDate: string;
 
+    /** 未処理件数 */
+	unprocessNumber: string;
 }

@@ -86,3 +86,12 @@
     text-align: center;
     vertical-align: middle;
 }
+
+.btnApprovalSearch{
+    height: 30px !important;
+    width: 100px !important;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    vertical-align: middle;
+}

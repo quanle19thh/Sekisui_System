@@ -36,4 +36,7 @@ export class ODIS0010Form{
 
 	/** 最終承認 */
 	approvalFinal:boolean = false;
+
+	/** 承認担当検索 */
+	approvalSearch = false;
 }

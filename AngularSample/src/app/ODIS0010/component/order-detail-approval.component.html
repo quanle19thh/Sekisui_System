@@ -61,8 +61,12 @@
                             autocomplete="off">最終承認</div>
                 </div>
                 <div style="position: absolute; right: 0px; vertical-align: middle;">
-                    <button class="btn btn-primary autoMargin btnSearch" type="submit" tabindex="11"
-                        (click)="getSearchRequest($event)">検索</button>
+                    <button class="btn btn-primary autoMargin btnApprovalSearch" type="submit" tabindex="11"
+                        (click)="getSearchRequest($event,true)">承認担当検索</button>
+                </div>
+                <div style="position: absolute; right: 110px; vertical-align: middle;">
+                    <button class="btn btn-primary autoMargin btnSearch" type="submit" tabindex="12"
+                        (click)="getSearchRequest($event,false)">検索</button>
                 </div>
             </div>
         </section>

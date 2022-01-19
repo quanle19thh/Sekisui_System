@@ -189,6 +189,8 @@
         </div>
     </section>
 
+    <span *ngIf="unprocessFlg" style="color:#ff0000">※SABICS 発注インプット側で入力された明細がある為更新できません</span>
+
     <section style="margin-top: 10px;" class="tabGroup">
         <mat-tab-group disableRipple = "true" animationDuration="700ms" (selectedTabChange)="setSelectTabChanged($event)"
             [selectedIndex]="this.tabIndexValue">

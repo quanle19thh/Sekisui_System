@@ -147,7 +147,7 @@ export class OrderDetailApprovalComponent implements OnInit {
   /** 
    * 検索処理
    */
-  public getSearchRequest($event) {
+  public getSearchRequest($event,approvalSearch) {
 
     if (this.checkInput(this.inputment)) {
 

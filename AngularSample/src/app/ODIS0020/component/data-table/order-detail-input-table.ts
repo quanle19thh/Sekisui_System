@@ -4,7 +4,7 @@ import { ODIS0020SelApproval } from './../../entities/odis0020-selectApproval.en
 import { ODIS0020RowStatus } from './../../../ODIS0020/services/odis0020-DataEmitter.service';
 import { DatePipe } from '@angular/common';
 import { DataEmitter } from "../../services/odis0020-DataEmitter.service";
-import { Component, Input, ViewEncapsulation, Output, EventEmitter, OnInit,　AfterViewInit, ViewContainerRef, ViewChild} from "@angular/core";
+import { Component, Input, ViewEncapsulation, Output, EventEmitter, OnInit,　AfterViewInit, ViewContainerRef, ViewChild,  Injectable, } from "@angular/core";
 import { CommonComponent } from "app/common/common.component";
 import { Const } from "app/common/const";
 import { ODIS0060SplitDetailService } from 'app/ODIS0060/services/split-detail-input-service';
@@ -15,7 +15,11 @@ import { MatTable } from '@angular/material';
 import { ODIS0020Service } from 'app/ODIS0020/services/odis0020-service';
 import { CommonService } from "app/common/common.service";
 import { ODIS0020CustomerInfoBean } from '../../entities/odis0020-OrderInformation.entity'
-import { HttpClient } from '@angular/common/http';
+import { HttpClientModule, HttpClient, HttpRequest, HttpResponse, HttpEventType, HttpHeaders} from '@angular/common/http';
+import {Observable} from 'rxjs';
+@Injectable({
+  providedIn: 'root'
+  })
 
 
 @Component({
@@ -42,7 +46,7 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
   grayOut = Const.HighLightColour.GrayOut;
   transparent = Const.HighLightColour.Transparent;
   black = Const.HighLightColour.Black;
-  readonly readonlyTab = Const.TabName.TabName_Tsuika;
+  readonly readonlyTab = Const.TabName.TabName_Tsuika; 
   
   /** 明細に固定さている明細名称 */
   private readonly FIXED_ROW = ['0100','9100','9200','9300'];
@@ -56,6 +60,10 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
   //明細確定
   //meisaiKakutei: String;
   meisaiKakutei: boolean = true;
+
+  headers :Headers;
+  file: File = null as any;
+  msg: String = "";
 
   /**
    * テーブルヘッダーのカラムを定義する。
@@ -82,7 +90,7 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
     "bunKaku",              // 分割確定
     "bunKyaku",             // 分割却下
     "upload",               // ファイルアップロード
-    "download",             // ファイルアダウンロード
+    "download",             // ファイルダウンロード
     "hacChu",               // 発注
     "ukeIre",               // 受入
     "shiHarai",             // 支払
@@ -132,6 +140,9 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
     "paymentAmount",          // 支払金額
   ];
 
+  name = '';
+  result = '';
+
   constructor(
     public comCompnt: CommonComponent,
     private viewRef: ViewContainerRef,
@@ -142,6 +153,7 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
     private orderService: CommonService,
     private http: HttpClient,
   ) {  }
+
 
   ngOnInit(): void {
     
@@ -401,6 +413,11 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
       return true;
     }
 
+    // SABICS 発注インプット側で入力された明細がある場合非活性
+    if (element.unprocessFlag) {
+      return true;
+    }
+
     // 活性
     return false;
   }
@@ -412,7 +429,17 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
    */
   public isRejectFlg(element:ODIS0020OrderDetaiSplitBean, type?:string) {
     //「追加」タブを選択される場合、非活性する
-    if(this.tabName === this.readonlyTab){
+    if(this.tabName === this.readonlyTab ||
+       element.orderBranchNo == null && 
+       (element.journalCode == '0100' ||
+        element.journalCode == '9100' || 
+        element.journalCode == '9200' ||
+        element.journalCode == '9300' ) || 
+        (element.orderBranchNo == '30' && 
+        (element.journalCode == '0100' ||
+        element.journalCode == '9100' || 
+        element.journalCode == '9200' )) ||
+        element.unprocessFlag ){
       return true;
     }
     // 左側の却下ボタンには、一括最終承認が入る場合、非活性する
@@ -432,6 +459,8 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
     }
     return false;
   }
+
+
 
   /**
    * チェックボックスの活性か設定
@@ -482,6 +511,12 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
     if (this.FIXED_ROW.includes(element.journalCode)) {
       return true;
     }
+
+    // SABICS 発注インプット側で入力された明細がある場合非活性
+    if (element.unprocessFlag) {
+      return true;
+    }
+
     // 活性
     return false;
   }
@@ -493,11 +528,11 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
    */
   public getDisplayData($event, data: ODIS0020OrderDetaiSplitBean) {
     // 発注予定金額を発注金額に設定
-    data.orderSplitAmount = this.comCompnt.removeCommas(data.orderPlanAmount);
+     data.orderSplitAmount = this.comCompnt.removeCommas(data.orderPlanAmount);
     //左も注文書発行区分がチェックされたら、分割の注文書発行区分もチェックする
-    if(data.orderReceipt == Const.OrderReceiptCheckType.Checked){
-      data.splitOrderReceipt = Const.OrderReceiptCheckType.Checked;
-    }
+    // if(data.orderReceipt == Const.OrderReceiptCheckType.Checked){
+    //   data.splitOrderReceipt = Const.OrderReceiptCheckType.Checked;
+    // }
 
     let i = this.orderData.indexOf(data);
     let skBody = this.viewRef.element.nativeElement.querySelector('tbody');
@@ -611,7 +646,8 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
        (value.orderBranchNo == '30' && 
         (value.journalCode == '0100' ||
          value.journalCode == '9100' || 
-         value.journalCode == '9200' )) )
+         value.journalCode == '9200' )) ||
+         value.unprocessFlag )
          {
            alert('入力出来ません。');           
            return;
@@ -694,8 +730,18 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
 
       //依頼・承認ボタンを押下した後、明細変更テーブルにデータを表示しない。
       case 'SPAN':
-        wTr = event.path[3];
-        wTbody = event.path[4];
+
+        //ダウンロードの場合は１行ずらす(event.pathにdiv.originalFileBtnを挟むため)
+        var eventsize = new Array;
+        eventsize = event.path;
+
+        if(eventsize.length == 24){
+          wTr = event.path[4];
+          wTbody = event.path[5];
+        }else{
+          wTr = event.path[3];
+          wTbody = event.path[4];
+        }
         this.clickedPosition = event.path[2].cellIndex;
         break;
 
@@ -707,8 +753,18 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
 
       //チェックボックス
       case 'INPUT':
-        wTr = event.path[2];
-        wTbody = event.path[3];
+
+        //アップロードの場合は１行ずらす(event.pathにdiv.originalFileBtnを挟むため)
+        var eventsize = new Array;
+        eventsize = event.path;
+
+        if(eventsize.length == 23){
+          wTr = event.path[3];
+          wTbody = event.path[4];
+        }else{
+          wTr = event.path[2];
+          wTbody = event.path[3];
+        }
         this.clickedPosition = event.path[1].cellIndex;
         break;
     }
@@ -1421,7 +1477,7 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
       this.orderData.forEach(element => {
         if(element.detailNo == dt.detailNo){
           element.orderReceipt = value;
-          element.splitOrderReceipt = value; 
+          // element.splitOrderReceipt = value; 
         }
       });
     }
@@ -1448,17 +1504,17 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
           }
         }
       })
-      //分割データは全体が未チェック場合、発注注文発行区分が未チェックする
-      this.orderData.forEach(element => {
-        if(element.detailNo == dt.detailNo){
-          if(cnt == unCheck){
-            element.orderReceipt = Const.OrderReceiptCheckType.UnCheck;
-          }
-          else{
-            element.orderReceipt = Const.OrderReceiptCheckType.Checked;
-          }
-       }
-      })
+      // //分割データは全体が未チェック場合、発注注文発行区分が未チェックする
+      // this.orderData.forEach(element => {
+      //   if(element.detailNo == dt.detailNo){
+      //     if(cnt == unCheck){
+      //       element.orderReceipt = Const.OrderReceiptCheckType.UnCheck;
+      //     }
+      //     else{
+      //       element.orderReceipt = Const.OrderReceiptCheckType.Checked;
+      //     }
+      //  }
+      //})
 
     }
     // 最後にエミッタ―データを送る。
@@ -1467,21 +1523,102 @@ export class OrderDetailShiwakeTable implements OnInit, AfterViewInit {
   }
 
   //ファイルのアップロード
-  onchange(list: any) {
+  upload_file(list: any) {
+
     // ファイルが指定されていなければ
     if (list.length <= 0) { return; }
 
-    // ［3］ファイルを取得
+    // ファイルを取得
     let f = list[0];
-    // ［4］ファイルをセット
+    
+    const headers = new HttpHeaders()
+    .set('Content-Type','text/plain; charset=utf-8');
+
+    const httpOptions:Object = {
+      responseType: 'text'
+    };
+
+    // ファイルをセット
     let data = new FormData();
     data.append('upfile', f, f.name);
 
-    // ［5］サーバーに送信
-    this.http.post('app/upload.php', data)
+    // サーバーに送信
+    this.http.post('http://shwww.instorderpg.sekisuihouse.co.jp/php/upload.php', data, httpOptions)
       .subscribe(
         data => console.log(data),
         error => console.log(error)
       );
+    }
+
+// On file Select
+onChange(event:any) {
+  
+	this.file = event.target.files[0];
+
+  console.log(this.file);
+  this.upload(this.file).subscribe(
+      data => {console.log(data);
+               this.msg = data },
+      error => {console.log(error);
+               this.msg = error }
+  );
+}
+
+// Returns an observable
+upload(file:any):Observable<any> {
+
+    const httpOptions: Object = {
+          responseType: 'text'
+    }
+
+    const formData = new FormData();
+
+    formData.append("uploadfile", file, file.name);
+
+    return this.http.post('http://shwww.instorderpg.sekisuihouse.co.jp/php/upload.php', formData, httpOptions)
   }
+
+
+    // this.orderService.getAuthorizationSearch(Const.UrlLinkName.S0002_upload, data)
+    // .then(
+    //   (response) => {
+    //     if(response.result === Const.ConnectResult.R0001){ 
+    //     }
+    //   }
+    // )
+    
+    //     this.http.get('http://127.0.0.1/upload.php')
+    //     .subscribe(response=>{
+    //       //成功時の処理
+    //       console.log(response);
+    //      },error=>{
+    //  　　 //失敗時の処理
+    //       console.log(error); 
+    //      });
+
+  
+
+  
+// tsファイル
+download_file(path: string) {
+        (async () => {
+            // fetchでアクセス.
+            const res = await fetch("http://shwww.instorderpg.sekisuihouse.co.jp/interstage.jpg");
+            // const res = await fetch("http://localhost:4200/interstage.jpg");
+            // Blob形式でデータ取得.
+            const blob =  await res.blob();
+            const url = window.URL.createObjectURL(blob);
+            let title = "Angular_sample_file";
+            
+            // aタグを作成して無理やりクリック -> ダウンロード機能発火
+            let a = document.createElement('a');
+            document.body.appendChild(a);
+            a.setAttribute('style', 'display: none');
+            a.href = url;
+            a.download = title;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        })();
+    }
+
 }
